@@ -1,0 +1,18 @@
+version: '3.1'
+services:
+  front:
+    build: ./front-end 
+    image: code-analyzer-front-end
+    container_name: code-analyzer-front-end
+    volumes:
+      - ./front-end:/src
+    ports:
+      - "3000:3000"
+  back:
+    build: ./back-end
+    image: code-analyzer-back-end
+    container_name: code-analyzer-back-end
+    volumes:
+      - ./back-end:/src
+    ports:
+      - "3001:3001"
