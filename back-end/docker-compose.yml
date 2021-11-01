@@ -1,0 +1,10 @@
+version: '3.1'
+services:
+  back:
+    build: .
+    image: code-analyzer-back-end
+    container_name: code-analyzer-back-end
+    volumes:
+      - .:/src
+    ports:
+      - "3001:3001"
