@@ -1,6 +1,6 @@
 FROM node:current
 
-WORKDIR /src
+WORKDIR /front-end
 
 ENV NODE_ENV=development
 ENV PORT=3000

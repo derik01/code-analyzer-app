@@ -1,6 +1,6 @@
 FROM python:3
 
-WORKDIR /src
+WORKDIR /back-end
 
 ENV FLASK_ENV=development
 
@@ -12,4 +12,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 3001
 
-CMD [ "python", "./wsgi.py" ]
+CMD [ "python", "./src/wsgi.py" ]
