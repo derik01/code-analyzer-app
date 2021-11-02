@@ -25,7 +25,7 @@ export default function Index() {
             Code Analyizer
           </Typography>
           <Button color="inherit">Login</Button>
-          <Button color="inherit">SignUp</Button>
+          <Button color="inherit">SignUp 2</Button>
         </Toolbar>
       </AppBar>
     </Box>

@@ -9,11 +9,8 @@ services:
     image: code-analyzer-front-end
     container_name: code-analyzer-front-end
     volumes:
-      - ./src:/front-end/src
-      - ./public:/front-end/public
-      - ./package.json:/front-end/package.json
-      - ./next-env.d.ts:/front-end/next-env.d.ts
-      - ./tsconfig.json:/front-end/tsconfig.json
+      - ./front-end/src:/front-end/src
+      - ./front-end/public:/front-end/public
     ports:
       - "3000:3000"
   back:
