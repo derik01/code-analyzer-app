@@ -10,6 +10,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CodeIcon from '@mui/icons-material/Code';
 import { Container, Stack } from '@mui/material';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
+import { useDropzone } from 'react-dropzone';
 
 declare module '@mui/material/AppBar' {
     interface AppBarColorOverrides {
@@ -48,7 +49,14 @@ function HeaderBar() {
     );
 }
 
-const DropZone = () => (
+const DropZone = () => {
+    const onDrop = React.useCallback(acceptedFiles => {
+        console.log(`Accepting: ${acceptedFiles}`);
+    }, []);
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
+    return (
     <div
         style={{
             padding: '1em',
@@ -60,7 +68,10 @@ const DropZone = () => (
                 borderRadius: '5px',
                 padding: '6em 0'
             }}
+
+            {...getRootProps()}
         >
+            <input {...getInputProps()} />
             <Stack
                 style={{
                     width: '300px',
@@ -91,7 +102,8 @@ const DropZone = () => (
             </Stack>
         </div>
     </div>
-);
+    );
+}
 
 const UploadPannel = () => ( 
     <Box
