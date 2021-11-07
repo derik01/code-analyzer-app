@@ -48,7 +48,7 @@ def upload_file():
     ret_dict = {}
     for s in range(len(file_suggestions)):
 
-        currSuggest = yaml.load(file_suggestions[s])
+        currSuggest = yaml.load(file_suggestions[s], Loader=yaml.FullLoader)
         ret_dict[file_names[s]] = currSuggest
 
     return ret_dict
