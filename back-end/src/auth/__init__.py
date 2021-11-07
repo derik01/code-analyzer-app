@@ -1,1 +1,1 @@
-from auth.routes import auth 
+from auth.routes import auth

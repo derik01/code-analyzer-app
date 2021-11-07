@@ -1,29 +1,15 @@
-from flask import Blueprint, request, jsonify
-from errors import err
+from flask import Flask, render_template, request, redirect
 
-auth = Blueprint('auth', __name__, url_prefix='/auth')
+auth = Flask('auth', __name__, url_prefix='/auth')
 
-@auth.route('/ping', methods=['GET'])
-def ping_pong():
-    return 'pong'
+auth.config["FILE_UPLOAD_PATH"] = "/mnt/c/CSCE315/Project3/code-analyzer-app/files"
 
-def is_test_user(username, password):
-    return username == "test" and password == "password"
+@auth.route('/uploadFile', methods=['POST'])
+def upload_file():
 
-@auth.route('/login', methods=['POST'])
-def login():
-    params = request.get_json()
+    if request.method == "POST":
+        if request.files:
+            file = request.files["file"]
 
-    if(is_test_user(params['username'], params['password'])):
-        return jsonify() # Success
+            file.save(os.path.join(auth.config["FILE_UPLOAD_PATH"]))
 
-    return  err.INVALID_CREDENTIALS.responsify()
-
-@auth.route('/signup', methods=['POST'])
-def signup():
-    params = request.get_json()
-
-    if(not is_test_user(params['username'], params['password'])):
-        return jsonify() # Success
-
-    return err.ACCOUNT_EXISTS.responsify()
