@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { FC } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -12,25 +13,20 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { useDropzone } from 'react-dropzone';
 import { useState } from "react";
 
-let e 
-let name 
-let message 
-
 declare module '@mui/material/AppBar' {
     interface AppBarColorOverrides {
         bg: true;
     }
 }
 
-function HeaderBar() {
-    return (
-        <AppBar
-            position="static"
-            color="bg"
-            sx={{
-                marginBottom: '3em',
-            }}
-        >
+const HeaderBar : FC = () =>  (
+    <AppBar
+        position="static"
+        color="bg"
+        sx={{
+            marginBottom: '3em',
+        }}
+    >
         <Toolbar color="primary">
             <IconButton
                 color="primary"
@@ -49,54 +45,14 @@ function HeaderBar() {
                 variant="outlined"
             >Logout</Button>
         </Toolbar>
-        </AppBar>
-    );
-}
+    </AppBar>
+);
 
-const DropZone = () => {
-    const [files, setFile] = useState<File[]>([]);
-    const [empty , setEmpty] = useState(true);
-    const [filename, setName] = useState("");
-    const [msg, setMsg] = useState("");
-    
-    const onDrop = React.useCallback((acceptedFiles : File[]) => {
-        console.log(`Accepting Length: ${acceptedFiles.length}`);
-        acceptedFiles.map(async (file : File) => {
-            var formData = new FormData();
-            formData.append('file', file, file.name);
+type DropZoneProps = {
+    onDrop : () => void
+};
 
-            fetch('/user/upload', {
-            method: 'POST',
-            body: formData
-            }).then(
-                res => res.json()
-            ).then(
-                success => {
-                    setFile(success);
-                    
-                    setEmpty(false);
-                    
-                    Object.keys(success).map((key) => setName(key));
-                    
-                    Object.values(success).map((m : any) => 
-                        setMsg(m.Diagnostics[0].DiagnosticMessage.Message)
-                    );
-                   
-                   e = empty;
-                   name = filename;
-                   message = msg;
-                }
-            ).catch(
-                err => console.log(err)
-            );
-          });
-
-    }, [files, empty, filename, msg]);
-    
-    e = empty;
-    name = filename;
-    message = msg;
-
+const DropZone : FC<DropZoneProps> = ({ onDrop }) => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
     
@@ -150,7 +106,7 @@ const DropZone = () => {
     );
 }
 
-const UploadPannel = () => ( 
+const UploadPannel : FC = () => ( 
     <Box
         sx={{
             padding: '2em'
@@ -170,14 +126,19 @@ const UploadPannel = () => (
     </Box>
 );
 
-const ModalRec = () => {
+type SuggestionsBoxProps = {
+    name: string;
+    message: string;
+};
+
+const ModalRec : FC<SuggestionsBoxProps> = ({ name, message }) => {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     
     return(
         <div>
-            <Button onClick={handleOpen}>View Recommendations</Button>
+            <Button disabled={name == ""} onClick={handleOpen}>View Recommendations</Button>
             <Modal
                 aria-labelledby="unstyled-modal-title"
                 aria-describedby="unstyled-modal-description"
@@ -208,11 +169,40 @@ const ModalRec = () => {
 };
 
 export default function Dashboard() {
-    return (  
+    const [name, setName] = useState<string>("");
+    const [message, setMessage] = useState<string>("");
+
+    const onDrop = React.useCallback((acceptedFiles : File[]) => {
+        console.log(`Accepting Length: ${acceptedFiles.length}`);
+        acceptedFiles.map(async (file) => {
+            const formData = new FormData();
+            formData.append('file', file, file.name);
+
+            fetch('/user/upload', {
+                method: 'POST',
+                body: formData
+            }).then(
+                res => res.json()
+            ).then(
+                success => {
+                    Object.keys(success).map((key) => setName(key));
+                    
+                    Object.values(success).map((m : any) => 
+                        setMessage(m.Diagnostics[0].DiagnosticMessage.Message)
+                    );
+                }
+            ).catch(
+                err => console.log(err)
+            );
+          });
+
+    });
+
+    return (
     <Box sx={{ flexGrow: 1 }}>
        <HeaderBar />
         <Container>
-            <ModalRec></ModalRec>
+            <ModalRec name={name} message={message} />
             <Paper
                 elevation={3}
             >
@@ -222,7 +212,7 @@ export default function Dashboard() {
                     justifyContent="center"
                 >
                     <Grid lg={6} md={7} sm={12} item>
-                        <DropZone />
+                        <DropZone onDrop={onDrop} />
                     </Grid>
                     <Grid lg={6} md={5} sm={12} item>
                         <UploadPannel />
