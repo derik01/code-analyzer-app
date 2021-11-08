@@ -49,13 +49,12 @@ const HeaderBar : FC = () =>  (
 );
 
 type DropZoneProps = {
-    onDrop : () => void
+    onDrop : <T extends File>(acceptedFiles: T[]) => void;
 };
 
-const DropZone : FC<DropZoneProps> = ({ onDrop }) => {
+const DropZone : FC<DropZoneProps> = ({ onDrop } : DropZoneProps) => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-    
     //test.cpp -> Diagnostics[0] -> DiagnosticMessage -> Message
     return (
         <div
@@ -131,7 +130,7 @@ type SuggestionsBoxProps = {
     message: string;
 };
 
-const ModalRec : FC<SuggestionsBoxProps> = ({ name, message }) => {
+const ModalRec : FC<SuggestionsBoxProps> = ({ name, message } : SuggestionsBoxProps) => {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -173,7 +172,6 @@ export default function Dashboard() {
     const [message, setMessage] = useState<string>("");
 
     const onDrop = React.useCallback((acceptedFiles : File[]) => {
-        console.log(`Accepting Length: ${acceptedFiles.length}`);
         acceptedFiles.map(async (file) => {
             const formData = new FormData();
             formData.append('file', file, file.name);
@@ -195,31 +193,30 @@ export default function Dashboard() {
                 err => console.log(err)
             );
           });
-
-    });
+    }, []);
 
     return (
-    <Box sx={{ flexGrow: 1 }}>
-       <HeaderBar />
-        <Container>
-            <ModalRec name={name} message={message} />
-            <Paper
-                elevation={3}
-            >
-                <Grid
-                    container
-                    direction="row"
-                    justifyContent="center"
+        <Box sx={{ flexGrow: 1 }}>
+        <HeaderBar />
+            <Container>
+                <ModalRec name={name} message={message} />
+                <Paper
+                    elevation={3}
                 >
-                    <Grid lg={6} md={7} sm={12} item>
-                        <DropZone onDrop={onDrop} />
+                    <Grid
+                        container
+                        direction="row"
+                        justifyContent="center"
+                    >
+                        <Grid lg={6} md={7} sm={12} item>
+                            <DropZone onDrop={onDrop} />
+                        </Grid>
+                        <Grid lg={6} md={5} sm={12} item>
+                            <UploadPannel />
+                        </Grid>
                     </Grid>
-                    <Grid lg={6} md={5} sm={12} item>
-                        <UploadPannel />
-                    </Grid>
-                </Grid>
-            </Paper>
-        </Container>
-    </Box>
+                </Paper>
+            </Container>
+        </Box>
     );
 }
