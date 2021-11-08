@@ -6,13 +6,11 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import { Grid, Modal, Paper } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import CodeIcon from '@mui/icons-material/Code';
 import { Container, Stack } from '@mui/material';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { useDropzone } from 'react-dropzone';
 import { useState } from "react";
-//import { DropzoneArea } from 'material-ui-dropzone';
 
 let e 
 let name 
@@ -66,18 +64,8 @@ function HeaderBar() {
         </AppBar>
     );
 }
-// var input = document.querySelector('input[type="file"]')
 
-// var data = new FormData()
-// data.append('file', input.files[0])
-// data.append('user', 'hubot')
-
-// fetch('/avatars', {
-//   method: 'POST',
-//   body: data
-// })
 const DropZone = () => {
-
     const [files, setFile] = useState<any[]>([]);
     const [empty , setEmpty] = useState(true);
     const [filename, setName] = useState("");
@@ -121,24 +109,9 @@ const DropZone = () => {
                 err => console.log(err)
             );
           });
-        
- 
-        // var formData = new FormData();
-        // formData.append('file', files[0]);
-
-        // fetch('/user/upload', {
-        // method: 'POST',
-        // body: formData
-        // }).then(
-        //     res => res.json()
-        // ).then(
-        //     success => console.log(success)
-        // ).catch(
-        //     err => console.log(err)
-        // );
 
     }, [files, empty, filename, msg]);
-    //console.log(files);
+    
     e = empty;
     name = filename;
     message = msg;
@@ -271,30 +244,28 @@ const ModalRec = () => {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    //const e = React.useContext(isEmpty);
     
-        return(
-            <div>
-                <Button onClick={handleOpen}>View Reccomendations</Button>
-                <Modal
-                    aria-labelledby="unstyled-modal-title"
-                    aria-describedby="unstyled-modal-description"
-                    open={open}
-                    onClose={handleClose}
-                >
-                <Box sx={style}>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                     Reccomendation for file: {name}
+    return(
+        <div>
+            <Button onClick={handleOpen}>View Recommendations</Button>
+            <Modal
+                aria-labelledby="unstyled-modal-title"
+                aria-describedby="unstyled-modal-description"
+                open={open}
+                onClose={handleClose}
+            >
+            <Box sx={style}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+                Recommendations for file: {name}
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                {message}
                 </Typography>
-                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    {message}
-                 </Typography>
-                </Box>
-            </Modal>
-            </div>
-                
-        );
-    
+            </Box>
+        </Modal>
+        </div>
+            
+    );
 };
 
 
