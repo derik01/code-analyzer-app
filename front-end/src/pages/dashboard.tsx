@@ -6,12 +6,18 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import { Grid, Modal, Paper } from '@mui/material';
+import { AlertTitle, Grid, Modal, Paper } from '@mui/material';
 import CodeIcon from '@mui/icons-material/Code';
 import { Container, Stack } from '@mui/material';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { useDropzone } from 'react-dropzone';
 import { useState } from "react";
+import Chip from "@mui/material/Chip";
+import Alert from '@mui/material/Alert';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import styles from './dashboard.module.scss';
+import AlertColor from '@mui/material/AlertColor';
+
 
 declare module '@mui/material/AppBar' {
     interface AppBarColorOverrides {
@@ -167,9 +173,59 @@ const ModalRec : FC<SuggestionsBoxProps> = ({ name, message } : SuggestionsBoxPr
     );
 };
 
+type DiagnosticeMessage = {
+    FileOffset : number;
+    Path : string;
+    Message : string;
+    Replacements : any;
+};
+
+type Diagnostic = {
+    BuildDirectory : string;
+    DiagnosticMessage : DiagnosticeMessage;
+    DiagnosticName : string;
+    Level : "Warning" | "Error";
+};
+
+type LinterAnalysis = {
+    [fileName: string] : {
+        Diagnostics: Diagnostic[];
+        MainSourceFile : string;
+    };
+}
+
+type SuggestionProps = {
+    Diagnostic : Diagnostic;
+    FileName : string;
+};
+
+const Suggestion : FC<SuggestionProps> = ({Diagnostic, FileName, ...props} : SuggestionProps) => {
+    console.log(Diagnostic.DiagnosticMessage);
+    return(
+        <Alert
+            severity = {Diagnostic.Level.toLowerCase() as AlertColor}
+            classes = {{message : styles.alertMessage}}
+            {...props}
+        >
+            
+            <Stack
+            direction = "row"
+            justifyContent = "space-between"
+            alignItems="Center"
+            spacing = {2}>
+            <AlertTitle >{Diagnostic.Level}</AlertTitle>
+            <Chip label={`${FileName} ${Diagnostic.DiagnosticMessage.FileOffset}`} icon={<FolderOpenIcon/>}/>
+            </Stack>
+            {Diagnostic.DiagnosticMessage.Message}
+        </Alert>
+    )
+};
+
+
 export default function Dashboard() {
-    const [name, setName] = useState<string>("");
-    const [message, setMessage] = useState<string>("");
+    // const [name, setName] = useState<string>("");
+    // const [message, setMessage] = useState<string>("");
+    const [response, setResponse] = useState<LinterAnalysis | null>(null);
 
     const onDrop = React.useCallback((acceptedFiles : File[]) => {
         acceptedFiles.map(async (file) => {
@@ -182,24 +238,31 @@ export default function Dashboard() {
             }).then(
                 res => res.json()
             ).then(
-                success => {
-                    Object.keys(success).map((key) => setName(key));
-                    
-                    Object.values(success).map((m : any) => 
-                        setMessage(m.Diagnostics[0].DiagnosticMessage.Message)
-                    );
-                }
+                (success : LinterAnalysis) => {
+                    console.log(success);
+                    setResponse(success);
+            }
             ).catch(
                 err => console.log(err)
             );
           });
     }, []);
 
+    let suggestions = undefined;
+    if(response !== null){
+        suggestions = Object.entries(response!).map(([file, diags]) =>
+            diags.Diagnostics.map(Diagnostic =>
+                    <Suggestion key = {`${file}${Diagnostic.DiagnosticMessage.FileOffset}`} Diagnostic = {Diagnostic} FileName = {file}/>
+                )
+        ).reduce((prev, next) => prev.concat(next))
+    }
+
+
     return (
         <Box sx={{ flexGrow: 1 }}>
         <HeaderBar />
             <Container>
-                <ModalRec name={name} message={message} />
+                {/* <ModalRec name={name} message={message} /> */}
                 <Paper
                     elevation={3}
                 >
@@ -215,6 +278,9 @@ export default function Dashboard() {
                             <UploadPannel />
                         </Grid>
                     </Grid>
+                    <Stack spacing = {2} sx ={{padding : "1em"}}>
+                        {suggestions}
+                    </Stack>
                 </Paper>
             </Container>
         </Box>
