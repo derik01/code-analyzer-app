@@ -20,7 +20,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @user.route('/upload', methods=['POST']) 
 def upload_file():
 
-    uploaded_files = request.files.getlist("file")
+    uploaded_files = request.files.getlist("files")
     file_suggestions = []
     file_names = []
     suggestions = ""
