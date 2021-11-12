@@ -6,18 +6,14 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import { AlertTitle, Grid, Modal, Paper } from '@mui/material';
+import { Grid, Paper } from '@mui/material';
 import CodeIcon from '@mui/icons-material/Code';
 import { Container, Stack } from '@mui/material';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { useDropzone } from 'react-dropzone';
 import { useState } from "react";
-import Chip from "@mui/material/Chip";
-import Alert from '@mui/material/Alert';
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import styles from './dashboard.module.scss';
-import AlertColor from '@mui/material/AlertColor';
-
+import Suggestion from '../components/Suggestion';
+import { LinterAnalysis } from '../lib/LinterAnalysis';
 
 declare module '@mui/material/AppBar' {
     interface AppBarColorOverrides {
@@ -61,7 +57,6 @@ type DropZoneProps = {
 const DropZone : FC<DropZoneProps> = ({ onDrop } : DropZoneProps) => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-    //test.cpp -> Diagnostics[0] -> DiagnosticMessage -> Message
     return (
         <div
             style={{
@@ -131,100 +126,11 @@ const UploadPannel : FC = () => (
     </Box>
 );
 
-type SuggestionsBoxProps = {
-    name: string;
-    message: string;
-};
 
-const ModalRec : FC<SuggestionsBoxProps> = ({ name, message } : SuggestionsBoxProps) => {
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-    
-    return(
-        <div>
-            <Button disabled={name == ""} onClick={handleOpen}>View Recommendations</Button>
-            <Modal
-                aria-labelledby="unstyled-modal-title"
-                aria-describedby="unstyled-modal-description"
-                open={open}
-                onClose={handleClose}
-            >
-                <Box sx={{
-                    position: 'absolute' as 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: 400,
-                    bgcolor: 'background.paper',
-                    border: '2px solid #000',
-                    boxShadow: 24,
-                    p: 4,
-                }}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Recommendations for file: {name}
-                    </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        {message}
-                    </Typography>
-                </Box>
-            </Modal>
-        </div>
-    );
-};
 
-type DiagnosticeMessage = {
-    FileOffset : number;
-    Path : string;
-    Message : string;
-    Replacements : any;
-};
-
-type Diagnostic = {
-    BuildDirectory : string;
-    DiagnosticMessage : DiagnosticeMessage;
-    DiagnosticName : string;
-    Level : "Warning" | "Error";
-};
-
-type LinterAnalysis = {
-    [fileName: string] : {
-        Diagnostics: Diagnostic[];
-        MainSourceFile : string;
-    };
-}
-
-type SuggestionProps = {
-    Diagnostic : Diagnostic;
-    FileName : string;
-};
-
-const Suggestion : FC<SuggestionProps> = ({Diagnostic, FileName, ...props} : SuggestionProps) => {
-    console.log(Diagnostic.DiagnosticMessage);
-    return(
-        <Alert
-            severity = {Diagnostic.Level.toLowerCase() as AlertColor}
-            classes = {{message : styles.alertMessage}}
-            {...props}
-        >
-            
-            <Stack
-            direction = "row"
-            justifyContent = "space-between"
-            alignItems="Center"
-            spacing = {2}>
-            <AlertTitle >{Diagnostic.Level}</AlertTitle>
-            <Chip label={`${FileName} ${Diagnostic.DiagnosticMessage.FileOffset}`} icon={<FolderOpenIcon/>}/>
-            </Stack>
-            {Diagnostic.DiagnosticMessage.Message}
-        </Alert>
-    )
-};
 
 
 export default function Dashboard() {
-    // const [name, setName] = useState<string>("");
-    // const [message, setMessage] = useState<string>("");
     const [response, setResponse] = useState<LinterAnalysis | null>(null);
 
     const onDrop = React.useCallback((acceptedFiles : File[]) => {
@@ -239,7 +145,6 @@ export default function Dashboard() {
                 res => res.json()
             ).then(
                 (success : LinterAnalysis) => {
-                    console.log(success);
                     setResponse(success);
             }
             ).catch(
@@ -250,10 +155,14 @@ export default function Dashboard() {
 
     let suggestions = undefined;
     if(response !== null){
-        suggestions = Object.entries(response!).map(([file, diags]) =>
+        suggestions = Object.entries(response!).map(([fileName, diags]) =>
             diags.Diagnostics.map(Diagnostic =>
-                    <Suggestion key = {`${file}${Diagnostic.DiagnosticMessage.FileOffset}`} Diagnostic = {Diagnostic} FileName = {file}/>
-                )
+                <Suggestion
+                    key={`${fileName}${Diagnostic.DiagnosticMessage.FileOffset}`}
+                    Diagnostic={Diagnostic} 
+                    fileName={fileName}
+                />
+            )
         ).reduce((prev, next) => prev.concat(next))
     }
 
@@ -262,7 +171,6 @@ export default function Dashboard() {
         <Box sx={{ flexGrow: 1 }}>
         <HeaderBar />
             <Container>
-                {/* <ModalRec name={name} message={message} /> */}
                 <Paper
                     elevation={3}
                 >
