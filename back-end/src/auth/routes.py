@@ -1,15 +1,16 @@
-from flask import Flask, render_template, request, redirect
+from flask import Blueprint, Flask
+from flask_bcrypt import Bcrypt
 
-auth = Flask('auth', __name__, url_prefix='/auth')
+auth = Blueprint('auth', __name__, url_prefix='/auth')
 
-auth.config["FILE_UPLOAD_PATH"] = "/mnt/c/CSCE315/Project3/code-analyzer-app/files"
+@auth.route('/ping', methods=['GET'])
+def ping_pong():
+    return 'pong'
 
-@auth.route('/uploadFile', methods=['POST'])
-def upload_file():
+app = Flask(__name__)
+bcrypt = Bcrypt(app)
 
-    if request.method == "POST":
-        if request.files:
-            file = request.files["file"]
-
-            file.save(os.path.join(auth.config["FILE_UPLOAD_PATH"]))
-
+@app.route('/register', methods=['GET'])
+def register(name, lastName, username, password):
+    hash_pass = bcrypt.generate_password_hash(password)
+    
