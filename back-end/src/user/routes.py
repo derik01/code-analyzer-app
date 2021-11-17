@@ -46,7 +46,7 @@ def upload_file():
     
     for file in uploaded_files:
         if not allowed_file(file.filename):
-            return {"err" : "One or more of the files are not in the following format: .cpp, .h, .cc, .hpp."}
+            return {"err" : "One or more of the files are not in the following format: .cpp, .h, .cc, .hpp."}, 400
 
 
     with tempfile.TemporaryDirectory() as tmp_dir:
@@ -69,7 +69,7 @@ def upload_file():
                 '-checks=-*,bugprone-*,cppcoreguidelines-*',
                 '--header-filter=./', 
                 *temp_files_paths,
-                '--extra-arg=-stdlib=libc++',
+                '--extra-arg=-stdlib=libstdc++',
             ]
 
             subprocess.run(CMD)
@@ -86,6 +86,7 @@ def upload_file():
         currSuggest = yaml.load(file_suggestions[s], Loader=yaml.FullLoader)
         ret_dict[file_names[s]] = currSuggest
 
+    # file_dict = ret_dict[]
     return ret_dict
 
 import time
