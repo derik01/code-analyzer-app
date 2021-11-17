@@ -9,7 +9,7 @@ services:
     image: code-analyzer-front-end
     container_name: code-analyzer-front-end
     volumes:
-      - ./front-end/src:/front-end/src
+      - ./front-end/src:/front-end/src .
       - ./front-end/public:/front-end/public
     ports:
       - "3000:3000"
@@ -18,6 +18,6 @@ services:
     image: code-analyzer-back-end
     container_name: code-analyzer-back-end
     volumes:
-      - ./back-end/src:/back-end/src
+      - ./back-end/src:/back-end/src .
     ports:
       - "3001:3001"

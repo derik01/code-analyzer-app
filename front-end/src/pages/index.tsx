@@ -25,7 +25,18 @@ export default function Index() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Code Analyizer
           </Typography>
-          <Login />
+            <Button
+            href="http://localhost:3000/login"
+          id="loginBtn"
+          size="large"
+          edge="start"
+          color="inherit"
+          aria-label="menu"
+          position="right"
+          sx={{ mr: 2 }}
+          >
+            Login
+          </Button>
         </Toolbar>
       </AppBar>
     </Box>
