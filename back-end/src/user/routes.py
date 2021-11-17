@@ -20,6 +20,20 @@ def ping_pong():
 UPLOAD_FOLDER = '/tmp'
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config["FILE_EXTENSION"] = ["CPP", "H", "CC", "HPP"]
+
+def allowed_file(filename):
+    if not "." in filename:
+        return False
+
+    exts = filename.rsplit(".", 1)[1]
+
+    if exts.upper() in app.config["FILE_EXTENSION"]:
+        return True
+    else:
+        return False
+
+
 
 @user.route('/upload', methods=['POST']) 
 def upload_file():
@@ -28,18 +42,34 @@ def upload_file():
     file_suggestions = []
     file_names = []
     suggestions = ""
-
+    file_paths = []
+    
     for file in uploaded_files:
-        file_names.append(file.filename)
-        path = os.path.join(app.config['UPLOAD_FOLDER'], str(uuid4())) + '.cpp'
-        file.save(path)
+        if not allowed_file(file.filename):
+            return {"err" : "One or more of the files are not in the following format: .cpp, .h, .cc, .hpp."}
+
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        temp_files_paths = []
+        for file in uploaded_files:
+            temp_files_paths.append(os.path.join(tmp_dir, file.filename))
+
+            temp_path = os.path.join(tmp_dir, file.filename)
+            file.save(temp_path)
+
+            file_names.append(file.filename)
+            path = os.path.join(app.config['UPLOAD_FOLDER'], str(uuid4()))
+            file.save(path)
+            file_paths.append(path)
 
         with tempfile.NamedTemporaryFile('w+') as file:
             CMD = [
                 'clang-tidy',
-                path,
                 f'--export-fixes={file.name}', 
-                '-checks=-*,bugprone-*,cppcoreguidelines-*' 
+                '-checks=-*,bugprone-*,cppcoreguidelines-*',
+                '--header-filter=./', 
+                *temp_files_paths,
+                '--extra-arg=-stdlib=libc++',
             ]
 
             subprocess.run(CMD)
@@ -47,7 +77,8 @@ def upload_file():
             suggestions = file.read()
             file_suggestions.append(suggestions)
 
-        os.remove(path)
+        for path in file_paths:
+            os.remove(path)
 
     ret_dict = {}
     for s in range(len(file_suggestions)):
