@@ -1,42 +1,43 @@
 import React, { useReducer, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
-import CardHeader from "@mui/material/CardHeader";
-import Button from "@mui/material/Button";
-import { Paper } from '@mui/material';
-import { Container } from '@mui/material';
-import Box from '@mui/material/Box';
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
-const container = {
-  display: "flex",
-  flexWrap: "wrap",
-  width: 400,
-  margin: 0
-};
-const loginBtn = {
-  marginTop: 2,
-  flexGrow: 1
-};
-const signupBtn = {
-  marginTop: 2,
-  flexGrow: 1
-};
-const header = {
-  textAlign: "center",
-  background: "#212121",
-  color: "#fff"
-};
-const card = {
-  marginTop: 10
-};
+import TextField from "@mui/material/TextField";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import CardActions from "@material-ui/core/CardActions";
+import CardHeader from "@material-ui/core/CardHeader";
+import Button from "@material-ui/core/Button";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    container: {
+      display: "flex",
+      flexWrap: "wrap",
+      width: 400,
+      margin: `${theme.spacing(0)} auto`
+    },
+    loginBtn: {
+      marginTop: theme.spacing(2),
+      flexGrow: 1
+    },
+    signupBtn: {
+      marginTop: theme.spacing(2),
+      flexGrow: 1
+    },
+    header: {
+      textAlign: "center",
+      background: "#212121",
+      color: "#fff"
+    },
+    card: {
+      marginTop: theme.spacing(10)
+    }
+  })
+);
 
 type State = {
   username: string;
   password: string;
-  login: string; //todo: get error status from backend
-  signup: string;
   isButtonDisabled: boolean;
   helperText: string;
   isError: boolean;
@@ -45,8 +46,6 @@ type State = {
 const initialState: State = {
   username: "",
   password: "",
-  login: "",
-  signup: "",
   isButtonDisabled: true,
   helperText: "",
   isError: false
@@ -112,7 +111,9 @@ const reducer = (state: State, action: Action): State => {
 };
 
 const Login = () => {
+  const classes = useStyles();
   const [state, dispatch] = useReducer(reducer, initialState);
+  const loginFormData = new FormData();
   const [formValue, setformValue] = React.useState({
     email: "",
     password: ""
@@ -131,15 +132,13 @@ const Login = () => {
       });
     }
   }, [state.username, state.password]);
-  //----------------------------------------------------------------------------------------------
+
   const handleLogin = () => {
-    //TODO: will adjust depending on feedback from backend
-    if (state.username === "email" && state.password === "pw") {
+    if (state.username === "user" && state.password === "password") {
       dispatch({
         type: "loginSuccess",
         payload: "Login Successfully"
       });
-      console.log(" successfully logged in", state.username);
     } else {
       dispatch({
         type: "loginFailed",
@@ -149,39 +148,26 @@ const Login = () => {
   };
 
   const handleSignup = () => {
-    //TODO: will adjust depending on feedback from backend
-    if (state.username !== "email") {
+    if (state.username !== "user") {
       dispatch({
         type: "signupSuccess",
         payload: "Signed Up Successfully"
       });
+      loginFormData.append("username", state.username);
       console.log("username", state.username);
-      console.log("password", state.password);
+      loginFormData.append("password", state.password);
+      console.log("username", state.password);
     } else {
       dispatch({
         type: "signupFailed",
-        payload: "Username Unavailable" //change to specific issue
+        payload: "Username Unavailable"
       });
     }
   };
 
-  fetch("/user/auth", {
-    method: "POST",
-    body: JSON.stringify(setformValue)
-  })
-    .then((r) => r.json())
-    .then((token) => {
-      if (token.access_token) {
-        console.log(token);
-      } else {
-        console.log("Please type in correct username/password");
-      }
-    });
-
-  //-------------------------------------------------------------------------------------------
   const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.keyCode === 13 || event.which === 13) {
-      state.isButtonDisabled || handleLogin();
+      state.isButtonDisabled || handleLogin() || handleSignup();
     }
   };
 
@@ -204,75 +190,74 @@ const Login = () => {
     });
     setformValue({ ...formValue, [event.type]: event.target.value });
   };
+  const onSubmitHandle = () => {
+    if (classes.loginBtn) {
+      type: {
+        handleLogin;
+      }
+    } else if (classes.signupBtn) {
+      type: {
+        handleSignup;
+      }
+    }
+  };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Container>
-        <Paper
-        width="100"
-        height="100"
-        margin="100"
-        elevation={3}
-        >
-          <form id="formSubmit" noValidate autoComplete="off">
-            <Card>
-              <CardHeader title="Login / Sign Up" />
-              <CardContent>
-                    <div>
-                      <TextField
-                        error={state.isError}
-                        fullWidth
-                        id="username"
-                        type="email"
-                        label="Username"
-                        placeholder="Username"
-                        margin="normal"
-                        onChange={handleUsernameChange}
-                        onKeyPress={handleKeyPress}
-                      />
-                      <TextField
-                        error={state.isError}
-                        fullWidth
-                        id="password"
-                        type="password"
-                        label="Password"
-                        placeholder="Password"
-                        margin="normal"
-                        helperText={state.helperText}
-                        onChange={handlePasswordChange}
-                        onKeyPress={handleKeyPress}
-                      />
-                    </div>
-                  </CardContent>
-                  <CardActions>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      color="secondary"
-                      className="loginBtn"
-                      onClick={handleLogin}
-                      disabled={state.isButtonDisabled}
-                    >
-                      Login
-                    </Button>
-          
-                    <Button
-                      variant="outlined"
-                      size="large"
-                      color="secondary"
-                      className="signupBtn"
-                      onClick={handleSignup}
-                      disabled={state.isButtonDisabled}
-                    >
-                      Sign Up
-                    </Button>
-                  </CardActions>
-                </Card>
-              </form>
-                </Paper>
-                </Container>
-                </Box>
-    
+    <form onSubmit={onSubmitHandle} noValidate autoComplete="off">
+      <Card className={classes.card}>
+        <CardHeader className={classes.header} title="Login / Sign Up" />
+        <CardContent>
+          <div>
+            <TextField
+              error={state.isError}
+              fullWidth
+              id="username"
+              type="email"
+              label="Username"
+              placeholder="Username"
+              margin="normal"
+              onChange={handleUsernameChange}
+              onKeyPress={handleKeyPress}
+            />
+
+            <TextField
+              error={state.isError}
+              fullWidth
+              id="password"
+              type="password"
+              label="Password"
+              placeholder="Password"
+              margin="normal"
+              helperText={state.helperText}
+              onChange={handlePasswordChange}
+              onKeyPress={handleKeyPress}
+            />
+          </div>
+        </CardContent>
+        <CardActions>
+          <Button
+            variant="contained"
+            size="large"
+            color="secondary"
+            className={classes.loginBtn}
+            onClick={handleLogin}
+            disabled={state.isButtonDisabled}
+          >
+            Login
+          </Button>
+
+          <Button
+            variant="outlined"
+            size="large"
+            color="secondary"
+            className={classes.signupBtn}
+            onClick={handleSignup}
+          >
+            Sign Up
+          </Button>
+        </CardActions>
+      </Card>
+    </form>
   );
 };
 
