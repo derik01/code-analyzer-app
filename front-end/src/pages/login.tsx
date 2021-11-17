@@ -1,39 +1,28 @@
 import React, { useReducer, useEffect } from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
-import TextField from "@mui/material/TextField";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CardActions from "@material-ui/core/CardActions";
-import CardHeader from "@material-ui/core/CardHeader";
-import Button from "@material-ui/core/Button";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    container: {
-      display: "flex",
-      flexWrap: "wrap",
-      width: 400,
-      margin: `${theme.spacing(0)} auto`
-    },
-    loginBtn: {
-      marginTop: theme.spacing(2),
-      flexGrow: 1
-    },
-    signupBtn: {
-      marginTop: theme.spacing(2),
-      flexGrow: 1
-    },
-    header: {
-      textAlign: "center",
-      background: "#212121",
-      color: "#fff"
-    },
-    card: {
-      marginTop: theme.spacing(10)
-    }
-  })
-);
+const container = {
+  display: "flex",
+  flexWrap: "wrap",
+  width: 400,
+  margin: 0
+};
+const loginBtn = {
+  marginTop: 2,
+  flexGrow: 1
+};
+const signupBtn = {
+  marginTop: 2,
+  flexGrow: 1
+};
+const header = {
+  textAlign: "center",
+  background: "#212121",
+  color: "#fff"
+};
+const card = {
+  marginTop: 10
+};
 
 type State = {
   username: string;
