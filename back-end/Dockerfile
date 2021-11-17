@@ -3,7 +3,7 @@ FROM python:3
 RUN apt-get -qq -y update
 
 RUN apt-get -qq -y --allow-downgrades --allow-remove-essential --allow-change-held-packages install \
-  clang-tidy g++
+  clang-tidy g++ libc++-dev
 
 WORKDIR /back-end
 

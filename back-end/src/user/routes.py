@@ -39,7 +39,6 @@ def allowed_file(filename):
 def upload_file():
 
     uploaded_files = request.files.getlist("files")
-    file_suggestions = []
     file_names = []
     suggestions = ""
     file_paths = []
@@ -75,16 +74,14 @@ def upload_file():
             subprocess.run(CMD)
 
             suggestions = file.read()
-            file_suggestions.append(suggestions)
 
         for path in file_paths:
             os.remove(path)
 
     ret_dict = {}
-    for s in range(len(file_suggestions)):
 
-        currSuggest = yaml.load(file_suggestions[s], Loader=yaml.FullLoader)
-        ret_dict[file_names[s]] = currSuggest
+    currSuggest = yaml.load(suggestions, Loader=yaml.FullLoader)
+    ret_dict["suggestions"] = currSuggest
 
     # file_dict = ret_dict[]
     return ret_dict

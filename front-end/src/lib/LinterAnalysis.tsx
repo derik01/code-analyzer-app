@@ -1,19 +1,19 @@
-export type DiagnosticeMessage = {
+export type DiagnosticMessage = {
     FileOffset : number;
-    Path : string;
+    FilePath : string;
     Message : string;
     Replacements : any;
 };
 
 export type Diagnostic = {
     BuildDirectory : string;
-    DiagnosticMessage : DiagnosticeMessage;
+    DiagnosticMessage : DiagnosticMessage;
     DiagnosticName : string;
     Level : "Warning" | "Error";
 };
 
 export type LinterAnalysis = {
-    [fileName: string] : {
+    [suggestion: string] : {
         Diagnostics: Diagnostic[];
         MainSourceFile : string;
     };
