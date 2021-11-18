@@ -1,5 +1,3 @@
-
-const CODE_STRING = `
 /*
  * Author:      Alexander Born
  * Course:      Fall 2020 CSCE 221 502
@@ -15,13 +13,13 @@ const CODE_STRING = `
 struct EmptyDLinkedListException : std::logic_error {
 
   EmptyDLinkedListException()
-    : std::logic_error("Empty Double Linked List")
+    : std::logic_error("Empty Double Linked List") 
   { }
 
 };
 
 struct MutatedOutOfBounds : std::out_of_range {
-  MutatedOutOfBounds()
+  MutatedOutOfBounds() 
     : std::out_of_range("Attempted to mutate node which is out of bounds.")
   { };
 };
@@ -45,7 +43,7 @@ DLListNode * realloc_heap_nodes(const DLListNode * src, DLListNode * dst){
   while((cursor = cursor->next) != nullptr){
     DLListNode * n = new DLListNode(cursor->prev->obj, dst);
     dst->next = n;
-    dst = dst->next;
+    dst = dst->next; 
   }
 
   return dst;
@@ -93,10 +91,10 @@ DLList & DLList::operator=(const DLList& dll){
     src.header.next = &src.trailer;           \
     src.trailer.prev = &src.header;           \
   }else {                                     \
-    /*
-     * construct to avoid wiring
+    /* 
+     * construct to avoid wiring 
      * destination head to source tail
-     * during reassignment
+     * during reassignment 
      *
     */                                        \
     dst->header.next = &dst->trailer;         \
@@ -122,7 +120,7 @@ DLListNode * DLList::first_node() const { return header.next; }
 
 const DLListNode * DLList::after_last_node() const { return &trailer; }
 
-int DLList::first() const {
+int DLList::first() const { 
   if(is_empty())
     throw EmptyDLinkedListException();
 
@@ -157,7 +155,7 @@ int DLList::remove_after(DLListNode &p){
     throw EmptyDLinkedListException();
   else if(&p == &trailer || p.next == &trailer)
     throw MutatedOutOfBounds();
-
+  
   return remove_node(p.next);
 }
 
@@ -168,7 +166,7 @@ int DLList::remove_before(DLListNode &p){
   else if(&p == &header || p.prev == &header)
     throw MutatedOutOfBounds();
 
-  return remove_node(p.prev);
+  return remove_node(p.prev); 
 }
 
 int DLList::remove_first() { return remove_after(header); }
@@ -185,7 +183,7 @@ void insert_node(DLListNode *at, int new_obj){
 }
 
 void DLList::insert_after(DLListNode &p, int obj){
-  insert_node(&p, obj);
+  insert_node(&p, obj); 
 }
 
 void DLList::insert_before(DLListNode &p, int obj){
@@ -208,6 +206,3 @@ std::ostream & operator<<(std::ostream & stream, const DLList & dll){
 
   return stream;
 }
-`;
-
-export default CODE_STRING;

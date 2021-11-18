@@ -161,7 +161,10 @@ export default function Dashboard() {
         }).then(
             res => res.json()
         ).then(
-            (success : LinterAnalysis) => setResponse(success)
+            (success : LinterAnalysis) => { 
+                console.log(success);
+                setResponse(success) 
+            }
         ).catch(
             err => setErr(`Failed to upload file. ${err.message}`)
         );

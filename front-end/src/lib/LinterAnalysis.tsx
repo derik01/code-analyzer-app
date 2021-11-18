@@ -25,12 +25,12 @@ export type Err = {
 };
 
 export type SourceFile = {
-    id: string;
-    Diagnostics: Diagnostic[];
+    name: string;
+    Diagnostics?: Diagnostic[];
 };
 
 export type SourceMap = {
-    [name: string]: SourceFile;
+    [id: string]: SourceFile;
 };
 
 export type UploadResult = SourceMap | Err;

@@ -1,0 +1,890 @@
+{
+    "d0c395eed8e3fde15b7fe25b4f7d5d89": {
+      "name": "DLList-main.cpp",
+      "Diagnostics": [
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 77,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "'DLList.h' file not found",
+            "Replacements": []
+          },
+          "DiagnosticName": "clang-diagnostic-error",
+          "Level": "Error",
+          "Ranges": [
+            {
+              "FileOffset": 77,
+              "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+              "Length": 10
+            }
+          ]
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 224,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "variable 'dll' is not initialized",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+                "Length": 0,
+                "Offset": 227,
+                "ReplacementText": " = 0"
+              }
+            ]
+          },
+          "DiagnosticName": "cppcoreguidelines-init-variables",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 360,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "10 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 369,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "100 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 377,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "10 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 541,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "10 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 550,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "100 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 558,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "10 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 688,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "variable 'dll2' is not initialized",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+                "Length": 0,
+                "Offset": 692,
+                "ReplacementText": " = 0"
+              }
+            ]
+          },
+          "DiagnosticName": "cppcoreguidelines-init-variables",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 804,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "variable 'dll3' is not initialized",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+                "Length": 0,
+                "Offset": 808,
+                "ReplacementText": " = 0"
+              }
+            ]
+          },
+          "DiagnosticName": "cppcoreguidelines-init-variables",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 938,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "10 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1089,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "10 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1510,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "10 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1519,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "100 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1527,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "10 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1650,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "variable 'curr' is not initialized",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+                "Length": 0,
+                "Offset": 1654,
+                "ReplacementText": " = nullptr"
+              }
+            ]
+          },
+          "DiagnosticName": "cppcoreguidelines-init-variables",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1836,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "41 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1844,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "50 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1998,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "59 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2006,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "50 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2212,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "9 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2366,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "9 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2488,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "variable 'origDll' is not initialized",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+                "Length": 0,
+                "Offset": 2495,
+                "ReplacementText": " = 0"
+              }
+            ]
+          },
+          "DiagnosticName": "cppcoreguidelines-init-variables",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2510,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "10 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2519,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "100 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2527,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "10 is a magic number; consider replacing it with a named constant",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-avoid-magic-numbers",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2577,
+            "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+            "Message": "variable 'moveDll' is not initialized",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp",
+                "Length": 0,
+                "Offset": 2584,
+                "ReplacementText": " = 0"
+              }
+            ]
+          },
+          "DiagnosticName": "cppcoreguidelines-init-variables",
+          "Level": "Warning"
+        }
+      ],
+      "MainSourceFile": "/tmp/38798b7b-9bd2-4e3b-8ca5-c4819e77ae7f.cpp"
+    },
+    "c67479d36c64fe7c3b6e65d886797bcd": {
+      "name": "DLList.cpp",
+      "Diagnostics": [
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 134,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "'DLList.h' file not found",
+            "Replacements": []
+          },
+          "DiagnosticName": "clang-diagnostic-error",
+          "Level": "Error",
+          "Ranges": [
+            {
+              "FileOffset": 134,
+              "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+              "Length": 10
+            }
+          ]
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 836,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "variable 'cursor' is not initialized",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 842,
+                "ReplacementText": " = nullptr"
+              }
+            ]
+          },
+          "DiagnosticName": "cppcoreguidelines-init-variables",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1092,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "variable 'cursor' is not initialized",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 1098,
+                "ReplacementText": " = nullptr"
+              }
+            ]
+          },
+          "DiagnosticName": "cppcoreguidelines-init-variables",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1684,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "function-like macro 'MOVE_DLL_CONTENT' used; consider a 'constexpr' template function",
+            "Replacements": []
+          },
+          "DiagnosticName": "cppcoreguidelines-macro-usage",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1730,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 1730,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 1733,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1776,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 1776,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 1779,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1790,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 1790,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 1793,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1824,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 1824,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 1827,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1839,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 1839,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 1842,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1968,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 1968,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 1971,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 1994,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 1994,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 1997,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2016,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2016,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2019,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2043,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2043,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2046,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2160,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2160,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2163,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2179,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2179,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2182,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2208,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2208,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2211,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2228,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2228,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2231,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2468,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2468,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2471,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2488,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2488,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2491,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2516,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2516,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2519,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 2537,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "macro argument should be enclosed in parentheses",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2537,
+                "ReplacementText": "("
+              },
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 2540,
+                "ReplacementText": ")"
+              }
+            ]
+          },
+          "DiagnosticName": "bugprone-macro-parentheses",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 3325,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "variable 'obj' is not initialized",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 3328,
+                "ReplacementText": " = 0"
+              }
+            ]
+          },
+          "DiagnosticName": "cppcoreguidelines-init-variables",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 4147,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "variable 'n' is not initialized",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 4148,
+                "ReplacementText": " = nullptr"
+              }
+            ]
+          },
+          "DiagnosticName": "cppcoreguidelines-init-variables",
+          "Level": "Warning"
+        },
+        {
+          "BuildDirectory": "/back-end",
+          "DiagnosticMessage": {
+            "FileOffset": 4625,
+            "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+            "Message": "variable 'cursor' is not initialized",
+            "Replacements": [
+              {
+                "FilePath": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp",
+                "Length": 0,
+                "Offset": 4631,
+                "ReplacementText": " = nullptr"
+              }
+            ]
+          },
+          "DiagnosticName": "cppcoreguidelines-init-variables",
+          "Level": "Warning"
+        }
+      ],
+      "MainSourceFile": "/tmp/43f2c444-232a-4568-a44a-692100d2e469.cpp"
+    },
+    "36f147a9966bab842c1174f4ff3ad497": {
+      "name": "DLList.h"
+    }
+  }
