@@ -19,11 +19,6 @@ export type LinterAnalysis = {
     };
 }
 
-// user -> upload
-export type Err = {
-    err: string;
-};
-
 export type SourceFile = {
     name: string;
     Diagnostics?: Diagnostic[];
@@ -32,5 +27,3 @@ export type SourceFile = {
 export type SourceMap = {
     [id: string]: SourceFile;
 };
-
-export type UploadResult = SourceMap | Err;

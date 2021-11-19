@@ -9,7 +9,7 @@ import os
 from uuid import uuid4
 import yaml
 import json
-from errors import errify, err
+from errors import err
 
 user = Blueprint('user', __name__, url_prefix='/user')
 
@@ -79,7 +79,7 @@ def get_file(analysis_id):
     }
 
     if file_id not in id_to_source:
-        return errify(err.FILE_ID_NOT_VALID)
+        return err.FILE_ID_NOT_VALID.responsify()
     
     path = safe_join('./user/sample_files', id_to_source[file_id])
 
