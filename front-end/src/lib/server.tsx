@@ -11,7 +11,31 @@ const ERRCODE = {
     ACCOUNT_EXISTS: 'ACCOUNT_EXISTS'
 };
 
+export type AnalysisResponse = {
+    analysis_id: string;
+};
+
 const useServer = () => {
+
+    const cannonicalizeErrorHanding = (err : any) => {
+        if(err.msg && err.code) {
+            throw err as Err;
+        }
+
+        throw {
+            msg: 'An unknown error occured',
+            code: ERRCODE.FETCH_FAILED,
+        } as Err;
+    }
+
+    const forceJSON = async(res : Response) => {
+        if(res.ok)
+            return res.json();
+
+        const json = await res.json();
+    
+        throw json;
+    }
 
     function postJSON<Data>(url : string, data : object) : Promise<Data> {
         return fetch(url, {
@@ -22,39 +46,36 @@ const useServer = () => {
                     'Content-Type': 'application/json'
                 },
             })
-            .then(async res => {
-                if(res.ok)
-                    return res.json();
-
-                const json = await res.json();
-            
-                throw json;
-            })
-            .catch((err : any) => {
-
-                if(err.msg && err.code) {
-                    throw err as Err;
-                }
-
-                throw {
-                    msg: 'An unknown error occured',
-                    code: ERRCODE.FETCH_FAILED,
-                } as Err;
-            });
+            .then(forceJSON)
+            .catch(cannonicalizeErrorHanding);
     }
 
     const Server = {
-        signin: (username : string, password : string) =>  {
+        signin: (username : string, password : string) => {
             return postJSON('/auth/signin', {
                 username,
                 password,
-            });
+            }) as Promise<{}>;;
         },
         signup: (username : string, password : string) => {
             return postJSON('/auth/signup', {
                 username,
                 password,
-            });
+            }) as Promise<{}>;
+        },
+        upload_files: (files : File[]) => {
+            const formData = new FormData();
+
+            for(const file of files) {
+                formData.append('files', file, file.name);
+            }
+
+            return fetch('/user/analysis', {
+                method: 'POST',
+                body: formData
+            })
+            .then(forceJSON)
+            .catch(cannonicalizeErrorHanding) as Promise<AnalysisResponse>;
         }
     };
 

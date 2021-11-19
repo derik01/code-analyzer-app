@@ -57,20 +57,22 @@ def upload_file():
 
     return ret_dict
 
-@user.route('/test/<test2>', methods=['GET'])
-def test(test2):
-    f2 = request.args.get('t2')
+import time
 
-    return f'{f2} {test2}'
+@user.route('/analysis', methods=['POST'])
+def upload_analysis():
+    # example analysis id
+    
+    time.sleep(10)
 
-from functools import reduce
+    return jsonify({
+        'analysis_id': '0d4496673e920190753a3bfe9853c075'
+    })
 
 @user.route('/analysis/<analysis_id>/get_file', methods=['GET'])
 def get_file(analysis_id):
 
     file_id = request.args.get('file_id')
-
-    print(file_id)
 
     id_to_source = {
         'd0c395eed8e3fde15b7fe25b4f7d5d89': 'DLList-main.cpp',

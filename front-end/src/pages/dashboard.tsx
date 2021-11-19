@@ -6,15 +6,15 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import { Grid, Paper } from '@mui/material';
+import { LinearProgress, Grid, Paper, CircularProgress } from '@mui/material';
 import CodeIcon from '@mui/icons-material/Code';
 import { Container, Stack } from '@mui/material';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { useDropzone } from 'react-dropzone';
 import { useState } from "react";
-import Suggestion from '../components/Suggestion';
-import { LinterAnalysis } from '../lib/LinterAnalysis';
 import { DefaultPageProps } from "./_app";
+import { useRouter } from 'next/router';
+import { useServer } from '../lib/server';
 
 declare module '@mui/material/AppBar' {
     interface AppBarColorOverrides {
@@ -127,47 +127,66 @@ const UploadPannel : FC = () => (
     </Box>
 );
 
+const randInt = (a : number, b : number) => {
+    return Math.floor((b - a) * Math.random() + a);
+}
+
 export default function Dashboard({ showError } : DefaultPageProps) {
-    const [response, setResponse] = useState<LinterAnalysis | null>(null);
+    const UPLOAD_SAYINGS = [
+        'Discharging the flux capacitor',
+        'Overflowing the semantic buffer',
+        'Superimposing all quantum states',
+        'Backpropagating the gradients',
+        'Converting big-endian to little-endian',
+        'Detecting program haults',
+        'Caffinating the monkeys',
+        'Calculating the cross-entropy',
+        'Associating the cache'
+    ];
 
-    const onDrop = React.useCallback((acceptedFiles : File[]) => {
-        const formData = new FormData();
-        
-        for(const file of acceptedFiles) {
-            formData.append('files', file, file.name);
-        }
+    const router = useRouter();
+    const server = useServer();
+    const [uploading, setUploading] = useState(false);
+    const [saying, setSaying] = useState({
+        num: randInt(0, UPLOAD_SAYINGS.length)
+    });
 
-        fetch('/user/upload', {
-            method: 'POST',
-            body: formData
-        }).then(
-            res => res.json()
-        ).then(
-            (success : LinterAnalysis) => { 
-                console.log(success);
-                setResponse(success) 
-            }
-        ).catch(
-            err => showError({
-                msg: `Failed to upload a file ${err.msg}`,
-                ...err
-            })
-        );
-    }, [showError]);
-
-    let suggestions = undefined;
-    if(response !== null){
-        suggestions = Object.entries(response!).map(([fileName, diags]) =>
-            diags.Diagnostics.map(Diagnostic =>
-                <Suggestion
-                    key={`${fileName}${Diagnostic.DiagnosticMessage.FileOffset}`}
-                    Diagnostic={Diagnostic} 
-                    fileName={fileName}
-                />
-            )
-        ).reduce((prev, next) => prev.concat(next), [])
+    if(uploading) {
+        setTimeout(() => {
+            setSaying({
+                ...saying,
+                num: (saying.num + 1) % UPLOAD_SAYINGS.length,
+            });
+        }, 2500);
     }
 
+    const onDrop = React.useCallback((files : File[]) => {
+        setUploading(true);
+
+        server.upload_files(files)
+        .then(res => {
+            
+            router.push({
+                pathname: '/analyizer',
+                query: {
+                    analysis_id: res.analysis_id
+                },
+            });
+        })
+        .catch(
+            err => {
+            
+            showError({
+                msg: `Failed to upload a file ${err.msg}`,
+                ...err
+            });
+
+            setUploading(false);
+        }
+        );
+    }, []);
+
+    const visableSaying = UPLOAD_SAYINGS[ saying.num % UPLOAD_SAYINGS.length ];
 
     return (
         <>
@@ -177,21 +196,64 @@ export default function Dashboard({ showError } : DefaultPageProps) {
                 <Paper
                     elevation={3}
                 >
-                    <Grid
-                        container
-                        direction="row"
-                        justifyContent="center"
-                    >
-                        <Grid lg={6} md={7} sm={12} item>
-                            <DropZone onDrop={onDrop} />
+
+                        {uploading ? (
+                            <>
+                                    
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            padding: '3em 2em',
+                                            justifyContent: 'center'
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                marginBottom: '3em'
+                                            }}
+                                        >
+                                            <Typography 
+                                                textAlign="center"
+                                                variant="h3"
+                                            >
+                                                Analyzing
+                                            </Typography>
+                                        </Box>
+                                        <Box
+                                            sx={{
+                                                minHeight: '10px',
+                                                width: '80%'
+                                            }}
+                                        >
+                                            <LinearProgress/>
+                                        </Box>
+                                        <Typography
+                                            variant="h5"
+                                            textAlign="center"
+                                            sx={{
+                                                marginTop: '1em'
+                                            }}
+                                        >
+                                            {visableSaying}
+                                        </Typography>
+                                    </Box>
+                            </>
+                        ) : (
+                        <Grid
+                            container
+                            direction="row"
+                            justifyContent="center"
+                        >
+                            <Grid lg={6} md={7} sm={12} item>
+                                <DropZone onDrop={onDrop} />
+                            </Grid>
+                            <Grid lg={6} md={5} sm={12} item>
+                                <UploadPannel />
+                            </Grid>
                         </Grid>
-                        <Grid lg={6} md={5} sm={12} item>
-                            <UploadPannel />
-                        </Grid>
-                    </Grid>
-                    <Stack spacing = {2} sx ={{padding : "1em"}}>
-                        {suggestions}
-                    </Stack>
+                        )}
                 </Paper>
             </Container>
         </Box>
