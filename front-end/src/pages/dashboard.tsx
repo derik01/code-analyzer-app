@@ -6,7 +6,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import { Grid, Paper, Snackbar } from '@mui/material';
+import { Grid, Paper } from '@mui/material';
 import CodeIcon from '@mui/icons-material/Code';
 import { Container, Stack } from '@mui/material';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
@@ -14,7 +14,7 @@ import { useDropzone } from 'react-dropzone';
 import { useState } from "react";
 import Suggestion from '../components/Suggestion';
 import { LinterAnalysis } from '../lib/LinterAnalysis';
-import Alert from '@mui/material/Alert';
+import { DefaultPageProps } from "./_app";
 
 declare module '@mui/material/AppBar' {
     interface AppBarColorOverrides {
@@ -127,26 +127,8 @@ const UploadPannel : FC = () => (
     </Box>
 );
 
-type ErrorHandlerProps = {
-    err: string | null;
-    onClose: () => void;
-};
-
-const ErrorHandler : FC<ErrorHandlerProps> = ({err, onClose, ...props}) => {
-    const isOpen = err !== "" && err !== null;
-    
-    return (
-        <Snackbar open={isOpen} autoHideDuration={3000} onClose={onClose}>
-            <Alert severity="error" variant="filled" onClose={onClose} {...props}>
-                {err}
-            </Alert>
-        </Snackbar>
-    );
-};
-
-export default function Dashboard() {
+export default function Dashboard({ showError } : DefaultPageProps) {
     const [response, setResponse] = useState<LinterAnalysis | null>(null);
-    const [err, setErr] = useState<string | null>(null);
 
     const onDrop = React.useCallback((acceptedFiles : File[]) => {
         const formData = new FormData();
@@ -166,9 +148,12 @@ export default function Dashboard() {
                 setResponse(success) 
             }
         ).catch(
-            err => setErr(`Failed to upload file. ${err.message}`)
+            err => showError({
+                msg: `Failed to upload a file ${err.msg}`,
+                ...err
+            })
         );
-    }, [setErr]);
+    }, [showError]);
 
     let suggestions = undefined;
     if(response !== null){
@@ -210,7 +195,6 @@ export default function Dashboard() {
                 </Paper>
             </Container>
         </Box>
-        <ErrorHandler err={err} onClose={() => setErr(null)} />
         </>
     );
 }
