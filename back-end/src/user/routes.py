@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, Flask
 from flask import request, redirect, url_for, render_template
 from flask import safe_join, send_file
 
+from collections import defaultdict
 from werkzeug.utils import secure_filename
 import subprocess
 import tempfile
@@ -39,14 +40,14 @@ def allowed_file(filename):
 def upload_file():
 
     uploaded_files = request.files.getlist("files")
-    file_names = []
     suggestions = ""
     file_paths = []
+    names_dict = {}
+    count = 0
     
     for file in uploaded_files:
         if not allowed_file(file.filename):
             return {"err" : "One or more of the files are not in the following format: .cpp, .h, .cc, .hpp."}, 400
-
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         temp_files_paths = []
@@ -56,10 +57,12 @@ def upload_file():
             temp_path = os.path.join(tmp_dir, file.filename)
             file.save(temp_path)
 
-            file_names.append(file.filename)
-            path = os.path.join(app.config['UPLOAD_FOLDER'], str(uuid4()))
+            uuid_name = str(uuid4())
+            path = os.path.join(app.config['UPLOAD_FOLDER'], uuid_name)
+            names_dict[file.filename] = count
             file.save(path)
             file_paths.append(path)
+            count+=1
 
         with tempfile.NamedTemporaryFile('w+') as file:
             CMD = [
@@ -78,12 +81,22 @@ def upload_file():
         for path in file_paths:
             os.remove(path)
 
-    ret_dict = {}
 
     currSuggest = yaml.load(suggestions, Loader=yaml.FullLoader)
-    ret_dict["suggestions"] = currSuggest
 
-    # file_dict = ret_dict[]
+    ret_dict = defaultdict(list)
+    for key, val in names_dict.items():
+        ret_dict[val] = {"Diagnostics" : []}
+        ret_dict[val]["name"] = key
+    errors = currSuggest["Diagnostics"]
+    
+    for current_error in errors:
+        error_message = current_error["DiagnosticMessage"]
+        level = current_error["Level"]
+        file_path = current_error["DiagnosticMessage"]["FilePath"]
+        file_name = file_path.split('/')[-1]
+        ret_dict[names_dict[file_name]]["Diagnostics"].append(current_error)
+
     return ret_dict
 
 import time
@@ -104,9 +117,8 @@ def get_file(analysis_id):
     file_id = request.args.get('file_id')
 
     id_to_source = {
-        'd0c395eed8e3fde15b7fe25b4f7d5d89': 'DLList-main.cpp',
-        'c67479d36c64fe7c3b6e65d886797bcd': 'DLList.cpp',
-        '36f147a9966bab842c1174f4ff3ad497': 'DLList.h',
+        '0': 'hello.cpp',
+        '1': 'hello.hpp',
     }
 
     if file_id not in id_to_source:
