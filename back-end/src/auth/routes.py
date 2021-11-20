@@ -13,8 +13,8 @@ def ping_pong():
 
 
 app = Flask(__name__)
-client = pymongo.MongoClient("mongodb://127.0.0.1:27017/")
-db = client['User']
+client = pymongo.MongoClient("mongodb://userAuthentication:dbLamb2022@sample-cluster.node.us-east-1.docdb.amazonaws.com:27017/?tls=true&tlsCAFile=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false")
+db = client.User
 info = db.userInfo
 
 bcrypt = Bcrypt(app)
