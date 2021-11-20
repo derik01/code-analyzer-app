@@ -13,6 +13,7 @@ import json
 from errors import errify, err
 
 import boto3
+import pickle
 
 user = Blueprint('user', __name__, url_prefix='/user')
 
@@ -47,9 +48,9 @@ def upload_file():
     suggestions = ""
     file_paths = []
     names_dict = {}
-    count = 0
     
     client = boto3.client('s3', aws_access_key_id = access_key, aws_secret_access_key = secret_access_key)
+    upload_file_bucket = 'csce315project3files'
 
     for file in uploaded_files:
         if not allowed_file(file.filename):
@@ -64,10 +65,8 @@ def upload_file():
             file.save(temp_path)
 
             uuid_name = str(uuid4())
-            names_dict[file.filename] = count
-            count+=1
+            names_dict[file.filename] = uuid_name
             
-            upload_file_bucket = 'csce315project3files'
             upload_file_key = 'files/' + uuid_name
             client.upload_file(str(temp_path), upload_file_bucket, upload_file_key)
 
@@ -101,7 +100,13 @@ def upload_file():
         file_name = file_path.split('/')[-1]
         ret_dict[names_dict[file_name]]["Diagnostics"].append(current_error)
 
-    return ret_dict
+    json_dict = json.dumps(ret_dict, indent = 4)
+
+    analysis_id = str(uuid4())
+    upload_file_key = 'files/' + analysis_id
+    client.put_object(Bucket = upload_file_bucket, Key = upload_file_key, Body = json_dict)
+
+    return analysis_id
 
 @user.route('/analysis/<analysis_id>/get_file', methods=['GET'])
 def get_file(analysis_id):
