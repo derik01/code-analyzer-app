@@ -10,9 +10,14 @@ import os
 from uuid import uuid4
 import yaml
 import json
-from errors import err
+from errors import errify, err
+
+import boto3
 
 user = Blueprint('user', __name__, url_prefix='/user')
+
+access_key = "AKIAUX7NV5IPOEUTHQ7Z"
+secret_access_key = "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"
 
 @user.route('/ping', methods=['GET'])
 def ping_pong():
@@ -35,7 +40,6 @@ def allowed_file(filename):
         return False
 
 
-
 @user.route('/upload', methods=['POST']) 
 def upload_file():
 
@@ -45,6 +49,8 @@ def upload_file():
     names_dict = {}
     count = 0
     
+    client = boto3.client('s3', aws_access_key_id = access_key, aws_secret_access_key = secret_access_key)
+
     for file in uploaded_files:
         if not allowed_file(file.filename):
             return {"err" : "One or more of the files are not in the following format: .cpp, .h, .cc, .hpp."}, 400
@@ -58,11 +64,12 @@ def upload_file():
             file.save(temp_path)
 
             uuid_name = str(uuid4())
-            path = os.path.join(app.config['UPLOAD_FOLDER'], uuid_name)
             names_dict[file.filename] = count
-            file.save(path)
-            file_paths.append(path)
             count+=1
+            
+            upload_file_bucket = 'csce315project3files'
+            upload_file_key = 'files/' + uuid_name
+            client.upload_file(str(temp_path), upload_file_bucket, upload_file_key)
 
         with tempfile.NamedTemporaryFile('w+') as file:
             CMD = [
@@ -77,9 +84,6 @@ def upload_file():
             subprocess.run(CMD)
 
             suggestions = file.read()
-
-        for path in file_paths:
-            os.remove(path)
 
 
     currSuggest = yaml.load(suggestions, Loader=yaml.FullLoader)
@@ -99,22 +103,12 @@ def upload_file():
 
     return ret_dict
 
-import time
-
-@user.route('/analysis', methods=['POST'])
-def upload_analysis():
-    # example analysis id
-    
-    time.sleep(10)
-
-    return jsonify({
-        'analysis_id': '0d4496673e920190753a3bfe9853c075'
-    })
-
 @user.route('/analysis/<analysis_id>/get_file', methods=['GET'])
 def get_file(analysis_id):
 
     file_id = request.args.get('file_id')
+
+    print(file_id)
 
     id_to_source = {
         '0': 'hello.cpp',
@@ -122,7 +116,7 @@ def get_file(analysis_id):
     }
 
     if file_id not in id_to_source:
-        return err.FILE_ID_NOT_VALID.responsify()
+        return errify(err.FILE_ID_NOT_VALID)
     
     path = safe_join('./user/sample_files', id_to_source[file_id])
 
