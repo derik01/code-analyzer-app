@@ -1,4 +1,5 @@
-from flask import Blueprint, Flask
+import flask
+from flask import Blueprint, Flask, request
 import pymongo
 from flask_bcrypt import Bcrypt
 import re
@@ -18,6 +19,15 @@ info = db.userInfo
 
 bcrypt = Bcrypt(app)
 
+@app.route('/')
+def home():
+    user_id = request.cookies.get("UserCookie")
+    if user_id:
+        userN = info.find_one({"userName": user_id})
+        if userN:
+            return "Logged In"
+        else:
+            return "No User"
 
 def user_exists(email, username):
     exists = info.find_one({"$or": [{"userName": username}, {"email": email}]})
@@ -48,48 +58,9 @@ def check(email):
         return False
 
 
-#def register1(firstName, lastName, email, username, password):
-#    if not user_exists(username, email):
-#        if len(password) < 8:
-#            return "Short Password"
-#        elif not check(email):
-#            return "Invalid Email"
-#        else:
-#            hash_pass = bcrypt.generate_password_hash(password).decode('utf-8')
-#            userRecord = {
-#                "firstName": firstName,
-#                "lastName": lastName,
-#                "email": email,
-#                "userName": username,
-#                "password": hash_pass
-#            }
-#            info.insert_one(userRecord)
-#    else:
-#        print("User already exists")
-
-
-#def login1(username, password):
-#    if validate_user(username, password) == "True":
-#        print("You are logged in")
-#    elif validate_user(username, password) == "False":
-#        print("The username and password do not match")
-#    else:
-#        print("The username does not exist")
-
-
-#register1("Aref", "Sadeghi", "Aref@example.com", "ArefS", "password")
-#register1("Alex", "Born", "Alex@example.com", "AlexB", "password2")
-#register1("Ankith", "Pillay", "Ankith@example.com", "AnkithP", "password3")
-#register1("Jamie", "Wist", "Jamie@example.com", "JamieW", "password4")
-#register1("Derik", "Wang", "Wang@example.com", "DerikW", "password5")
-#login1("JamieW", "password4")
-
-# info.delete_one({"userName": "AnkithP"})
-
-
 @app.route('/register', methods=['POST'])
-def register(firstName, lastName, email, username, password):
-    if not user_exists(username, email):
+def register(email, password):
+    if not user_exists(email, password):
         if password.len() < 8:
             return "Password Error"
         elif not check(email):
@@ -97,20 +68,21 @@ def register(firstName, lastName, email, username, password):
         else:
             hash_pass = bcrypt.generate_password_hash(password).decode('utf-8')
             userRecord = {
-                "firstName": firstName,
-                "lastName": lastName,
                 "email": email,
-                "userName": username,
                 "password": hash_pass
             }
             info.insert_one(userRecord)
-            return "Good"
+            return "Registered Successfully"
+    else:
+        return "User Exists"
 
 
 @app.route('/login', methods=['POST'])
 def login(username, password):
     if validate_user(username, password) == "True":
-        return "Good"
+        response = flask.make_response()
+        response.set_cookie("UserCookie", username)
+        return "Logged In"
     elif validate_user(username, password) == "False":
         return "U/P Mismatch"
     else:
