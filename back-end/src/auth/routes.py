@@ -13,7 +13,7 @@ def ping_pong():
 
 
 app = Flask(__name__)
-client = pymongo.MongoClient("mongodb://userAuthentication:dbLamb2022@sample-cluster.node.us-east-1.docdb.amazonaws.com:27017/?tls=true&tlsCAFile=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false")
+client = pymongo.MongoClient("mongodb://userAuthentication:dbLamb2022@user-auth2.cz6hytxkzcpe.us-east-2.docdb.amazonaws.com:27017/?tls=true&tlsCAFile=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false")
 db = client.User
 info = db.userInfo
 
@@ -50,6 +50,25 @@ def validate_user(username, password):
 
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
 
+
+def register1(email, password):
+    if not user_exists(email, password):
+        if password.len() < 8:
+            print("Password Error")
+        elif not check(email):
+            print("Invalid Email")
+        else:
+            hash_pass = bcrypt.generate_password_hash(password).decode('utf-8')
+            userRecord = {
+                "email": email,
+                "password": hash_pass
+            }
+            info.insert_one(userRecord)
+            print("Registered Successfully")
+    else:
+        print("User Exists")
+
+register1("ArefS", "password")
 
 def check(email):
     if re.fullmatch(regex, email):
