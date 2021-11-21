@@ -58,26 +58,6 @@ def check_email(email):
         return False
 
 
-def register1(email, password):
-    if not user_exists(email, password):
-        if len(password) < 8:
-            print("Password Error")
-        elif not check_email(email):
-            print("Invalid Email")
-        else:
-            hash_pass = bcrypt.generate_password_hash(password).decode('utf-8')
-            userRecord = {
-                "email": email,
-                "password": hash_pass
-            }
-            info.insert_one(userRecord)
-            print("Registered Successfully")
-    else:
-        print("User Exists")
-
-
-register1("ArefS@example.com", "password")
-
 @app.route('/register', methods=['POST'])
 def register(email, password):
     if not user_exists(email, password):
