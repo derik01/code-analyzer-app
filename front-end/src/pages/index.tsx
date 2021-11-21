@@ -6,7 +6,6 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import Login from "./login";
 
 export default function Index() {
   return (
@@ -25,18 +24,8 @@ export default function Index() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Code Analyizer
           </Typography>
-            <Button
-            href="http://localhost:3000/login"
-          id="loginBtn"
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          position="right"
-          sx={{ mr: 2 }}
-          >
-            Login
-          </Button>
+          <Button color="inherit">Login</Button>
+          <Button color="inherit">SignUp</Button>
         </Toolbar>
       </AppBar>
     </Box>
