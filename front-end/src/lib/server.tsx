@@ -70,7 +70,7 @@ const useServer = () => {
                 formData.append('files', file, file.name);
             }
 
-            return fetch('/user/analysis', {
+            return fetch('/user/upload', {
                 method: 'POST',
                 body: formData
             })

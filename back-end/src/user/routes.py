@@ -10,7 +10,7 @@ import os
 from uuid import uuid4
 import yaml
 import json
-from errors import errify, err
+from errors import err
 
 import boto3
 import pickle
@@ -106,7 +106,9 @@ def upload_file():
     upload_file_key = 'files/' + analysis_id
     client.put_object(Bucket = upload_file_bucket, Key = upload_file_key, Body = json_dict)
 
-    return analysis_id
+    return jsonify({
+        'analysis_id': analysis_id
+    })
 
 @user.route('/analysis/<analysis_id>/get_file', methods=['GET'])
 def get_file(analysis_id):
@@ -121,7 +123,7 @@ def get_file(analysis_id):
     }
 
     if file_id not in id_to_source:
-        return errify(err.FILE_ID_NOT_VALID)
+        return err.FILE_ID_NOT_VALID.responsify()
     
     path = safe_join('./user/sample_files', id_to_source[file_id])
 
