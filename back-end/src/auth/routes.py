@@ -1,8 +1,10 @@
 import flask
-from flask import Blueprint, Flask, request
+from flask import Blueprint, Flask, request, jsonify
 import pymongo
 from flask_bcrypt import Bcrypt
 import re
+from errors import err
+
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -25,9 +27,9 @@ def home():
     if user_id:
         userN = info.find_one({"userName": user_id})
         if userN:
-            return "Logged In"
+            return jsonify()
         else:
-            return "No User"
+            return err.NO_USER.responsify()
 
 def user_exists(email, username):
     exists = info.find_one({"$or": [{"userName": username}, {"email": email}]})
@@ -62,9 +64,9 @@ def check_email(email):
 def register(email, password):
     if not user_exists(email, password):
         if password.len() < 8:
-            return "Password Error"
+            return err.BAD_PASSWORD.responsify()
         elif not check_email(email):
-            return "Invalid Email"
+            return err.INVALID_EMAIL.responsify()
         else:
             hash_pass = bcrypt.generate_password_hash(password).decode('utf-8')
             userRecord = {
@@ -72,9 +74,9 @@ def register(email, password):
                 "password": hash_pass
             }
             info.insert_one(userRecord)
-            return "Registered Successfully"
+            return jsonify()
     else:
-        return "User Exists"
+        return err.ACCOUNT_EXISTS.responsify()
 
 
 @app.route('/login', methods=['POST'])
@@ -82,8 +84,8 @@ def login(username, password):
     if validate_user(username, password) == "True":
         response = flask.make_response()
         response.set_cookie("UserCookie", username)
-        return "Logged In"
+        return jsonify()
     elif validate_user(username, password) == "False":
-        return "U/P Mismatch"
+        return err.INVALID_CREDENTIALS.responsify()
     else:
-        return "No User"
+        return err.NO_USER.responsify()
