@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "material-ui-dropzone": "^3.5.0",
-    "react-dropzone": "^11.4.2",
-    "react-dropzone-uploader": "^2.11.0"
-  }
-}
