@@ -34,11 +34,6 @@ export default function MyApp(props: MyAppProps) {
         <title>Code Analyzer</title>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
-      {/* <Router>
-      <Switch>
-        <Route exact path={`/index`} component={Index} />
-      </Switch>
-    </Router> */}
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <Component {...pageProps} showError={setErr} />
