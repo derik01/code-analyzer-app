@@ -52,13 +52,13 @@ const useServer = () => {
 
     const Server = {
         signin: (username : string, password : string) => {
-            return postJSON('/auth/signin', {
+            return postJSON('/auth/login', {
                 username,
                 password,
-            }) as Promise<{}>;;
+            }) as Promise<{}>;
         },
         signup: (username : string, password : string) => {
-            return postJSON('/auth/signup', {
+            return postJSON('/auth/register', {
                 username,
                 password,
             }) as Promise<{}>;

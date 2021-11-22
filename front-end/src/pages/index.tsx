@@ -6,7 +6,8 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import Login from "./login";
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 export default function Index() {
   return (
@@ -36,6 +37,18 @@ export default function Index() {
           sx={{ mr: 2 }}
           >
             Login
+          </Button>
+          <Button
+            href="http://localhost:3000/register"
+          id="loginBtn"
+          size="large"
+          edge="start"
+          color="inherit"
+          aria-label="menu"
+          position="right"
+          sx={{ mr: 2 }}
+          >
+            Sign Up
           </Button>
         </Toolbar>
       </AppBar>

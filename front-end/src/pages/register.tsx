@@ -9,14 +9,15 @@ import { Paper } from "@mui/material";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Index from './index'
+import { useState } from "react";
 import { DefaultPageProps } from "./_app";
 import { useRouter } from 'next/router';
-import { useServer } from '../lib/server';
+import { useServer, ERRCODE } from '../lib/server';
 
 export type State = {
   username: string,
   password: string,
-  login: string,
+  errmsg: string,
   isButtonDisabled: boolean,
   helperText: string,
   isError: boolean
@@ -25,6 +26,7 @@ export type State = {
 export const initialState: State = {
   username: "",
   password: "",
+  errmsg: "",
   isButtonDisabled: true,
   helperText: "",
   isError: false
@@ -34,9 +36,9 @@ export type Action =
   | { type: "setUsername", payload: string }
   | { type: "setPassword", payload: string }
   | { type: "setIsButtonDisabled", payload: boolean }
-  | { type: "loginSuccess", payload: string }
-  | { type: "loginFailed", payload: string }
-  | { type: "setIsError", payload: boolean };
+  | { type: 'INVALID_CREDENTIALS', payload: string }
+  | { type: 'FETCH_FAILED', payload: string }
+  | { type: 'ACCOUNT_EXISTS', payload: string }
 
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -55,27 +57,26 @@ export const reducer = (state: State, action: Action): State => {
         ...state,
         isButtonDisabled: action.payload
       };
-    case "loginSuccess":
+    case 'INVALID_CREDENTIALS':
       return {
         ...state,
-        helperText: action.payload,
-        isError: false
+        errmsg: action.payload
       };
-    case "loginFailed":
+      case 'FETCH_FAILED':
       return {
         ...state,
-        helperText: action.payload,
-        isError: true
+        errmsg: action.payload
       };
-    case "setIsError":
+      case 'ACCOUNT_EXISTS':
       return {
         ...state,
-        isError: action.payload
+        errmsg: action.payload
       };
+      
   }
 };
 
-const Login = () => {
+const Register = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [formValue, setformValue] = React.useState({
     email: "",
@@ -83,7 +84,7 @@ const Login = () => {
   });
 
   useEffect(() => {
-    if (state.username.trim() && state.password.trim()) {
+    if (state.username.trim() && state.password.trim()) { 
       dispatch({
         type: "setIsButtonDisabled",
         payload: false
@@ -95,30 +96,32 @@ const Login = () => {
       });
     }
   }, [state.username, state.password]);
-  
 
-  const handleLogin = () => {
+  //-------------------------------------------------------------------------------------------
+  const handleSignup = () => {
     const server = useServer();
     const router = useRouter();  
-    const valid = server.signin(state.username, state.password);
+
+     const valid = server.signup(state.username, state.password);
 
      valid.then(res => {
         router.push({
-          pathname: './dashboard'
+          pathname: '/dashboard'
         })
      })
 
      valid.catch(err => {
        dispatch({
        type: err.code,
-       payload: `Failed to sign in account ${err.msg}`
+       payload: `Failed to create account ${err.msg}`
      })
     });
-  };
-  
+  }
+  //-------------------------------------------------------------------------------------------
+
   const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
-      const valid = state.isButtonDisabled || handleLogin();
+      state.isButtonDisabled || handleSignup();
     }
   };
 
@@ -150,7 +153,7 @@ const Login = () => {
         <Paper elevation={3}>
           <form id="formSubmit" noValidate autoComplete="off">
             <Card>
-              <CardHeader title="Login" />
+              <CardHeader title="Sign Up" />
               <CardContent>
                 <div>
                   <TextField
@@ -184,10 +187,12 @@ const Login = () => {
                   size="large"
                   color="secondary"
                   className="Btn"
-                  onClick={handleLogin}
+                  id="validate"
+                  type="validate"
+                  onClick={handleSignup}
                   disabled={state.isButtonDisabled}
                 >
-                  Login
+                  Sign Up
                 </Button>
               </CardActions>
             </Card>
@@ -199,4 +204,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
