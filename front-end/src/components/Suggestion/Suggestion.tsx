@@ -28,6 +28,8 @@ const Suggestion : FC<SuggestionProps> = ({Diagnostic, fileName, ...props} : Sug
         </Stack>
         {Diagnostic.DiagnosticMessage.Message}
     </Alert>
+   
+    
 );
 
 export default Suggestion;
