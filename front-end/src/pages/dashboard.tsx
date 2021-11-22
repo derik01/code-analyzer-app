@@ -15,12 +15,22 @@ import { useState } from "react";
 import { DefaultPageProps } from "./_app";
 import { useRouter } from 'next/router';
 import { useServer } from '../lib/server';
+import Header from "../components/Suggestion/header";
+
+
 
 declare module '@mui/material/AppBar' {
     interface AppBarColorOverrides {
         bg: true;
     }
 }
+
+
+
+
+  
+
+
 
 const HeaderBar : FC = () =>  (
     <AppBar
@@ -122,7 +132,7 @@ const UploadPannel : FC = () => (
         <Typography
             variant="subtitle1"
         >
-            Code analyizer allow you to analyize and grade your c++ code. Simple choose a file to upload and await the results!
+            Code analyzer allow you to analyize and grade your c++ code. Simple choose a file to upload and await the results!
         </Typography>
     </Box>
 );
@@ -191,7 +201,7 @@ export default function Dashboard({ showError } : DefaultPageProps) {
     return (
         <>
         <Box sx={{ flexGrow: 1 }}>
-        <HeaderBar />
+        <Header />
             <Container>
                 <Paper
                     elevation={3}
