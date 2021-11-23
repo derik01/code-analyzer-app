@@ -28,9 +28,12 @@ user = Blueprint('user', __name__, url_prefix='/user')
 
 access_key = "AKIAUX7NV5IPOEUTHQ7Z"
 secret_access_key = "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"
+upload_file_bucket = 'csce315project3files'
+client = boto3.client('s3', aws_access_key_id = access_key, aws_secret_access_key = secret_access_key)
 
 @user.route('/ping', methods=['GET'])
 def ping_pong():
+    
     return 'pong'
 
 UPLOAD_FOLDER = '/tmp'
@@ -49,6 +52,66 @@ def allowed_file(filename):
     else:
         return False
 
+from typing import Dict
+from collections import namedtuple
+
+Offset = namedtuple('Offset', ['id', 'offset'])
+LineChar = namedtuple('LineChar', ['line', 'char'])
+LineIndicator = namedtuple('LineIndicator', ['line_char', 'eof'])
+LineCharLookup = Dict[str, LineChar]
+
+def add_diagnostic_location(diagnostics : Dict, tmp_dir : str):
+    '''
+        Turns a "FileOffset" in the form (num) into a line and character "LineChar" tuple (line, char). This
+        information will be used by the front-end to position the suggestions within the file. The method is
+        called with tmp_dir because it reads the files line by line to determine the line and character position.
+
+        It stores the line and character information in the dict "diagnostics" passed to the function. Roughly:
+        {
+            "file_id": {
+                "Diagnostics": [
+                {
+                    ...
+                    "DiagnosticMessage": {
+                        "FileOffset": Z,
+                        ...
+                        "Location": [X, Y],
+                        "EOF": true | false
+                    }
+                }
+            ],
+            ...
+        }
+    '''
+    lookup : LineCharLookup = {}
+
+    for file, suggestions in diagnostics.items():
+        offsets = [Offset(diagnostic['DiagnosticId'], diagnostic['DiagnosticMessage']['FileOffset']) \
+                    for diagnostic in suggestions['Diagnostics']]
+
+        file_path = os.path.join(tmp_dir, suggestions['name'])
+        
+        offset = 0
+        i = 0
+        lnum = 1
+        with open(file_path) as f:
+            for line in f:
+                while i < len(offsets) and len(line) + offset > offsets[i].offset:
+                    lookup[offsets[i].id] = LineIndicator(LineChar(lnum, offsets[i].offset - offset), False)
+                    i += 1
+                
+                offset += len(line)
+                lnum += 1
+
+            # Some suggestions can by located at the EOF symbol
+            for j in range(i, len(offsets)):
+                lookup[offsets[j].id] = LineIndicator(LineChar(lnum, 0), True)
+
+    for file in diagnostics:
+        for diagnostic in diagnostics[file]['Diagnostics']:
+            line_indicator = lookup[diagnostic['DiagnosticId']]
+            diagnostic['DiagnosticMessage']['Location'] = line_indicator.line_char
+            diagnostic['DiagnosticMessage']['EOF'] = line_indicator.eof
 
 @user.route('/upload', methods=['POST']) 
 def upload_file():
@@ -57,9 +120,6 @@ def upload_file():
     suggestions = ""
     file_paths = []
     names_dict = {}
-    
-    client = boto3.client('s3', aws_access_key_id = access_key, aws_secret_access_key = secret_access_key)
-    upload_file_bucket = 'csce315project3files'
 
     for file in uploaded_files:
         if not allowed_file(file.filename):
@@ -89,25 +149,30 @@ def upload_file():
                 '--extra-arg=-stdlib=libstdc++',
             ]
 
-            subprocess.run(CMD)
+            subprocess.run(CMD, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
             suggestions = file.read()
 
 
-    currSuggest = yaml.load(suggestions, Loader=yaml.FullLoader)
+        currSuggest = yaml.load(suggestions, Loader=yaml.FullLoader)
 
-    ret_dict = defaultdict(list)
-    for key, val in names_dict.items():
-        ret_dict[val] = {"Diagnostics" : []}
-        ret_dict[val]["name"] = key
-    errors = currSuggest["Diagnostics"]
-    
-    for current_error in errors:
-        error_message = current_error["DiagnosticMessage"]
-        level = current_error["Level"]
-        file_path = current_error["DiagnosticMessage"]["FilePath"]
-        file_name = file_path.split('/')[-1]
-        ret_dict[names_dict[file_name]]["Diagnostics"].append(current_error)
+        ret_dict = defaultdict(list)
+        for key, val in names_dict.items():
+            ret_dict[val] = {"Diagnostics" : []}
+            ret_dict[val]["name"] = key
+        errors = currSuggest["Diagnostics"]
+        
+        for current_error in errors:
+            error_message = current_error["DiagnosticMessage"]
+            level = current_error["Level"]
+            file_path = current_error["DiagnosticMessage"]["FilePath"]
+            file_name = file_path.split('/')[-1]
+            # Used to create a (id, offset) -> (id, (line, char)) mapping
+            # see add_diagnostic_location
+            current_error["DiagnosticId"] = str(uuid4())
+            ret_dict[names_dict[file_name]]["Diagnostics"].append(current_error)
+
+        add_diagnostic_location(ret_dict, tmp_dir)
 
     json_dict = json.dumps(ret_dict, indent = 4)
 

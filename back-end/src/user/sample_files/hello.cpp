@@ -8,3 +8,5 @@ int main() {
     string s = "hello";
     cout << charToInt(12);
 }
+
+issue
