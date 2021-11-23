@@ -15,6 +15,15 @@ from errors import err
 import boto3
 import pickle
 
+# you can use db.analyses to access the analyses objects
+# and db.users to access the users
+import db 
+
+# Insert analysis and get unique id:
+#
+# analysis = db.analyses.insert_one({})
+# path_id = str(analysis.inserted_id)
+
 user = Blueprint('user', __name__, url_prefix='/user')
 
 access_key = "AKIAUX7NV5IPOEUTHQ7Z"

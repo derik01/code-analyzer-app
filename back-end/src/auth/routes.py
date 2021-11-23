@@ -4,12 +4,9 @@ import pymongo
 import re
 from errors import err
 from flask_bcrypt import Bcrypt
+import db
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
-
-client = pymongo.MongoClient("mongodb://mongo:27017/")
-db = client.User
-info = db.userInfo
 
 bcrypt = Bcrypt()
 
@@ -17,14 +14,14 @@ bcrypt = Bcrypt()
 def home():
     user_id = request.cookies.get("UserCookie")
     if user_id:
-        userN = info.find_one({"userName": user_id})
+        userN = db.users.find_one({"userName": user_id})
         if userN:
             return jsonify()
         else:
             return err.NO_USER.responsify()
 
 def user_exists(email, username):
-    exists = info.find_one({"$or": [{"userName": username}, {"email": email}]})
+    exists = db.users.find_one({"$or": [{"userName": username}, {"email": email}]})
     if exists:
         return True
     else:
@@ -32,7 +29,7 @@ def user_exists(email, username):
 
 
 def validate_user(username, password):
-    matches = info.find_one({"email": username})
+    matches = db.users.find_one({"email": username})
     if matches:
         if bcrypt.check_password_hash(matches["password"], password):
             return "True"
@@ -72,7 +69,7 @@ def register():
                 "email": email,
                 "password": hash_pass
             }
-            info.insert_one(userRecord)
+            db.users.insert_one(userRecord)
             return jsonify()
     
     return err.ACCOUNT_EXISTS.responsify()
