@@ -43,3 +43,21 @@ class err:
         'An account exists with this email',
         BAD_REQUEST
     )
+
+    PARAMETER_MISSING = ServerErr(
+        'MISSING_PARAM',
+        'A parameter is missing',
+        BAD_REQUEST
+    )
+
+    INVALID_EMAIL = ServerErr(
+        'INVALID_EMAIL',
+        'The email provided is invalid',
+        BAD_REQUEST
+    )
+
+    INVALID_USER = ServerErr(
+        'INVALID_USER',
+        'We don\'t reconize this username',
+        BAD_REQUEST
+    )

@@ -1,27 +1,19 @@
 import flask
 from flask import Blueprint, Flask, request, jsonify
 import pymongo
-from flask_bcrypt import Bcrypt
 import re
 from errors import err
-
+from flask_bcrypt import Bcrypt
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
 
-
-@auth.route('/ping', methods=['GET'])
-def ping_pong():
-    return 'pong'
-
-
-app = Flask(__name__)
-client = pymongo.MongoClient("mongodb://127.0.0.1:27017/")
+client = pymongo.MongoClient("mongodb://mongo:27017/")
 db = client.User
 info = db.userInfo
 
-bcrypt = Bcrypt(app)
+bcrypt = Bcrypt()
 
-@app.route('/')
+@auth.route('/')
 def home():
     user_id = request.cookies.get("UserCookie")
     if user_id:
@@ -40,7 +32,7 @@ def user_exists(email, username):
 
 
 def validate_user(username, password):
-    matches = info.find_one({"userName": username})
+    matches = info.find_one({"email": username})
     if matches:
         if bcrypt.check_password_hash(matches["password"], password):
             return "True"
@@ -60,10 +52,17 @@ def check_email(email):
         return False
 
 
-@app.route('/register', methods=['POST'])
-def register(email, password):
+@auth.route('/register', methods=['POST'])
+def register():
+    json = request.get_json()
+
+    if 'email' not in json or 'password' not in json:
+        return err.PARAMETER_MISSING.responsify() 
+
+    email, password = json['email'], json['password']
+
     if not user_exists(email, password):
-        if password.len() < 8:
+        if len(password) < 8:
             return err.BAD_PASSWORD.responsify()
         elif not check_email(email):
             return err.INVALID_EMAIL.responsify()
@@ -75,17 +74,24 @@ def register(email, password):
             }
             info.insert_one(userRecord)
             return jsonify()
-    else:
-        return err.ACCOUNT_EXISTS.responsify()
+    
+    return err.ACCOUNT_EXISTS.responsify()
 
 
-@app.route('/login', methods=['POST'])
-def login(username, password):
-    if validate_user(username, password) == "True":
+@auth.route('/login', methods=['POST'])
+def login():
+    json = request.get_json()
+    
+    if 'email' not in json or 'password' not in json:
+        return err.PARAMETER_MISSING.responsify() 
+
+    email, password = json['email'], json['password']
+
+    if validate_user(email, password) == "True":
         response = flask.make_response()
-        response.set_cookie("UserCookie", username)
+        response.set_cookie("UserCookie", email)
         return jsonify()
-    elif validate_user(username, password) == "False":
+    elif validate_user(email, password) == "False":
         return err.INVALID_CREDENTIALS.responsify()
-    else:
-        return err.NO_USER.responsify()
+
+    return err.INVALID_USER.responsify()
