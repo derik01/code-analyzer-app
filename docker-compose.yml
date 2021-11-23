@@ -17,3 +17,7 @@ services:
     container_name: code-analyzer-back-end
     volumes:
       - ./back-end/src:/back-end/src
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
