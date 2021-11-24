@@ -4,7 +4,8 @@ import {
     Toolbar, 
     IconButton,
     Typography, 
-    Button 
+    Button,
+    Tooltip
 } from '@mui/material';
 
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
@@ -112,28 +113,32 @@ const ProjectBar : FC<ProjectBarProps> = ({
           Analysis Results
         </Typography>
         { !sharing ? (<>
-            <IconButton
-                size="large"
-                aria-label="sharing link"
-                aria-haspopup="true"
-                color="inherit"
-                onClick={() => {
-                    const url = new URL(window.location.href);
-                    url.searchParams.append('sharing', 'true');
-                    navigator.clipboard.writeText(url.toString());
-                }}
-            >
-            <LinkIcon />
-            </IconButton>
-            <IconButton
-                size="large"
-                aria-label="return to dashboard"
-                aria-haspopup="true"
-                color="inherit"
-                href="/dashboard"
-            >
-                <KeyboardReturnIcon />
-            </IconButton>
+            <Tooltip title="Copy Sharing Link">
+                <IconButton
+                    size="large"
+                    aria-label="sharing link"
+                    aria-haspopup="true"
+                    color="inherit"
+                    onClick={() => {
+                        const url = new URL(window.location.href);
+                        url.searchParams.append('sharing', 'true');
+                        navigator.clipboard.writeText(url.toString());
+                    }}
+                >
+                    <LinkIcon />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title="Dashboard">
+                <IconButton
+                    size="large"
+                    aria-label="return to dashboard"
+                    aria-haspopup="true"
+                    color="inherit"
+                    href="/dashboard"
+                >
+                    <KeyboardReturnIcon />
+                </IconButton>
+            </Tooltip>
             </>) 
             : undefined 
         }
