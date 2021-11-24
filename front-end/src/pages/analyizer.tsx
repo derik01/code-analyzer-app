@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, ReactChild, ReactElement, useState } from 'react';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 
@@ -20,7 +20,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MenuIcon from '@mui/icons-material/Menu';
 
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import stackoverflow from 'react-syntax-highlighter/dist/cjs/styles/hljs/stackoverflow-dark';
+import solarized from 'react-syntax-highlighter/dist/cjs/styles/hljs/solarized-dark';
 
 import { SourceMap } from '../lib/LinterAnalysis';
 
@@ -62,29 +62,31 @@ type CodeTreeProps = {
   treeIsOpen: boolean;
   handleCloseTree: EventCallback;
   sourceMap: SourceMap;
-  onFileSelect: (file_id : string, idx : number | null) => void;
+  setSelectedSuggest: (suggestion_id : string | null) => void;
+  onFileSelect: (file_id : string) => void;
 };
 
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
-const CodeTree : FC<CodeTreeProps> = ({onFileSelect, treeIsOpen, handleCloseTree, sourceMap} : CodeTreeProps) => {
+const CodeTree : FC<CodeTreeProps> = ({onFileSelect, setSelectedSuggest, treeIsOpen, handleCloseTree, sourceMap} : CodeTreeProps) => {
     const theme = useTheme();
 
     const handleSelect = (event: React.SyntheticEvent, nodeIds: string) => {
       if(nodeIds.length > 0) {
         let file_id : string | null = null;
-        let idx : number | null = null;
+        let suggest_id : string | null = null;
 
-        if(nodeIds.indexOf('_') == - 1) {
+        if(nodeIds.indexOf('_') == -1) {
           file_id = nodeIds;
         } else { 
           const parts = nodeIds.split('_');
           file_id = parts[0];
-          idx = Number.parseInt(parts[1]);
+          suggest_id = parts[1];
         }
 
-        onFileSelect(file_id, idx);
+        onFileSelect(file_id);
+        setSelectedSuggest(suggest_id);
       }
     };
 
@@ -94,15 +96,15 @@ const CodeTree : FC<CodeTreeProps> = ({onFileSelect, treeIsOpen, handleCloseTree
       let suggestionsItems = undefined;
 
       if(sourceFile.Diagnostics) {
-        suggestionsItems = sourceFile.Diagnostics.map((diagnostic, idx) => {
-          const uniqueKey = [fileId, idx].join('_');
+        suggestionsItems = sourceFile.Diagnostics.map(({ DiagnosticId, DiagnosticName, Level }) => {
+          const uniqueKey = [fileId, DiagnosticId].join('_');
 
           return (
             <TreeItem 
               key={uniqueKey}
               nodeId={uniqueKey}
-              label={diagnostic.DiagnosticMessage.Message}
-              endIcon={diagnostic.Level === 'Warning' ? <WarningAmberIcon/> : <ErrorOutlineIcon/>}
+              label={DiagnosticName}
+              endIcon={Level === 'Warning' ? <WarningAmberIcon/> : <ErrorOutlineIcon/>}
             />
           );
         });
@@ -180,15 +182,273 @@ const useSourceFile = (analyisId : string, fileId : string) => {
   };
 }
 
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
+
+const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: '#f5f5f9',
+    color: 'rgba(0, 0, 0, 0.87)',
+    fontSize: theme.typography.pxToRem(12),
+    border: '1px solid #dadde9',
+    maxWidth: 350
+  },
+  [`& .${tooltipClasses.arrow}`]: {
+    color: '#f5f5f9',
+  }
+}));
+
+import { Diagnostic } from '../lib/LinterAnalysis';
+
+
+type SuggestionEnumeration = {
+  invMap: { [fileId : string]: number };
+  enum: [string, string][];
+  indexOf: (fileId : string) => number;
+  suggestionOf: (idx : number) => [string, string];
+};
+
+type SuggestionControl = {
+  closeSuggestionCallback: (suggest : string) => () => void;
+  openSuggestionCallback: (suggest : string) => () => void;
+  selectedSuggest : string | null;
+};
+
+interface CodeSuggestionProps {
+  Diagnostic: Diagnostic;
+  control: SuggestionControl;
+  enumerated: SuggestionEnumeration; 
+}
+
+import Chip from '@mui/material/Chip';
+
+const CodeSuggestion : FC<CodeSuggestionProps> = ({children, Diagnostic, control, enumerated, ...props}) => {
+  const Icon = Diagnostic.Level === "Warning" ? WarningAmberIcon : ErrorOutlineIcon;
+  const open = control.selectedSuggest === Diagnostic.DiagnosticId;
+
+  return (
+    <HtmlTooltip
+      title={
+        <>
+          <div
+            style={{
+              lineHeight: '2rem',
+              display: 'flex'
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                display: 'inline-block',
+                verticalAlign: 'middle',
+              }}
+            >
+              <Icon
+                sx={{
+                  display: 'inline-block',
+                  verticalAlign: 'text-top',
+                  marginRight: '0.4rem'
+                }}
+              />
+              {Diagnostic.DiagnosticName}
+            </Typography>
+          </div>
+          <div style={{
+            margin: '0.25em 0'
+          }}>
+          <Typography variant="body2">
+            {Diagnostic.DiagnosticMessage.Message}
+          </Typography>
+          </div>
+          <div style={{display: 'flex'}}>
+            <div style={{flexGrow: 1}} />
+            <div>
+              <Chip
+                label={
+                  `${enumerated.indexOf(Diagnostic.DiagnosticId) + 1}/${enumerated.enum.length}`
+                }
+                size="small"
+              />
+            </div>
+          </div>
+        </>
+      }
+      onOpen={control.openSuggestionCallback(Diagnostic.DiagnosticId)}
+      onClose={control.closeSuggestionCallback(Diagnostic.DiagnosticId)}
+      open={open}
+      arrow
+    >
+      {children}
+    </HtmlTooltip>
+  );
+}
+
+type AnnotatedDiagnostic = [charnum: number, diagnostics: Diagnostic];
+
+type LineMap = {
+  [linenum : number]: AnnotatedDiagnostic[] | undefined;
+};
+
+const WrappingRenderer = (diagnostics? : Diagnostic[], control : SuggestionControl, enumerated : SuggestionEnumeration) => {
+  const lineMap : LineMap = {};
+  const eofSuggestions : Diagnostic[] = [];
+
+  if(diagnostics) {
+    for(let diagnostic of diagnostics!) {
+      const [linenum, charnum] = diagnostic.DiagnosticMessage.Location;
+
+      if(lineMap[linenum] === undefined)
+        lineMap[linenum] = [[charnum, diagnostic]];
+      else
+        lineMap[linenum]!.push([charnum, diagnostic]);
+
+      if(diagnostic.DiagnosticMessage.EOF)
+        eofSuggestions.push(diagnostic);
+    }
+  }
+
+  const CodeTag : FC = ({children, ...props}) => {
+
+    const postRendered = React.Children.map(children, (codeSegment, i) => {
+
+      if(codeSegment === null || codeSegment === undefined) {
+        return codeSegment;
+      }
+
+      const _lineDiagnostics = lineMap[i];
+
+      if(_lineDiagnostics === undefined) {
+        return codeSegment;
+      }
+
+      const lineDiagnostics = _lineDiagnostics.sort(
+        ([charA, _a], [charB, _b]) => charA - charB
+      ) as AnnotatedDiagnostic[];
+
+      let offset = 0;
+      let diagIdx = 0;
+
+      const n_tags = React.Children.count(codeSegment.props.children);
+
+      const annotatedSegments = React.Children.map(codeSegment.props.children, function(codeTag, i) {
+        if (i === 0 || diagIdx >= lineDiagnostics.length || codeTag === undefined || codeTag == null) {
+          return codeTag;
+        }
+
+        let textContent = "";
+        if (typeof(codeTag) === "string") {
+          textContent = codeTag;
+        } else {
+          const n_children = React.Children.count(codeTag.props.children);
+
+          if(n_children !== 1) {
+            console.error("Expected one child");
+            return codeTag;
+          }
+
+          textContent = codeTag.props.children[0];
+        }
+
+        let wrapped = codeTag;
+
+        while(diagIdx < lineDiagnostics.length && textContent.length + offset > lineDiagnostics[diagIdx][0]) {
+          let endStyle = {};
+
+          if(i === n_tags - 1) {
+            endStyle = {
+              minWidth: 10
+            };
+          }
+
+          const diagnostic = lineDiagnostics[diagIdx][1];
+          
+          wrapped = (
+            <CodeSuggestion
+              Diagnostic={diagnostic}
+              control={control}
+              enumerated={enumerated}
+            >
+              <div
+                style={{
+                  border: '1px solid #657b83',
+                  borderRadius: '3px',
+                  ...endStyle
+                }}
+              >
+                {wrapped}
+              </div>
+            </CodeSuggestion>
+          );
+
+          diagIdx++;
+        }
+
+        offset += textContent.length;
+
+        return wrapped;
+      });
+
+      return React.cloneElement(codeSegment, [], annotatedSegments);
+    });
+
+    let eofSuggestion = null;
+    for(let diagnostic of eofSuggestions) {
+      if(eofSuggestion === null) {
+        eofSuggestion = <div style={{
+          minWidth: 10
+        }} />
+      }
+
+      eofSuggestion = (
+        <CodeSuggestion
+          Diagnostic={diagnostic}
+          control={control}
+          enumerated={enumerated}
+        >
+          {eofSuggestion}
+        </CodeSuggestion>
+      );
+    }
+
+    if(eofSuggestions !== null) {
+      postRendered?.push(eofSuggestion);
+    }
+
+    return <code
+      {...props}
+    >
+      {postRendered}
+    </code>;
+  };
+
+  return CodeTag;
+};
+
 type CodeViewerProps = {
   treeIsOpen: boolean;
   fileId: string;
   fileName: string;
   analyisId: string;
+  suggestionControl: SuggestionControl;
+  sourceMap: SourceMap;
+  enumerated: SuggestionEnumeration;
 };
 
-const CodeViewer : FC<CodeViewerProps> = ({analyisId, treeIsOpen, fileId, fileName} : CodeViewerProps) => {
+const CodeViewer : FC<CodeViewerProps> = ({
+  analyisId,
+  treeIsOpen,
+  fileId,
+  fileName,
+  sourceMap,
+  suggestionControl,
+  enumerated
+} : CodeViewerProps) => {
     const { sourceFile, err } = useSourceFile(analyisId, fileId);
+    
+    const diagnostics = sourceMap[fileId].Diagnostics;
+
+    const CodeTag = WrappingRenderer(diagnostics, suggestionControl, enumerated);
 
     return (
       <Main treeIsOpen={treeIsOpen}>
@@ -197,14 +457,19 @@ const CodeViewer : FC<CodeViewerProps> = ({analyisId, treeIsOpen, fileId, fileNa
         <SyntaxHighlighter 
             language='cpp' 
             style={{
-                ...stackoverflow
+                ...solarized
             }}
             customStyle={{
               fontFamily: "'Fira Code', 'monospace'",
-              borderRadius: '10px'
+              borderRadius: '10px',
+              lineHeight: '1.2rem'
             }}
             showLineNumbers
             wrapLongLines
+            lineProps={(lineNumber : number) => ({
+              id: `code-viewer-line-${lineNumber}`,
+            })}
+            CodeTag={CodeTag}
         >
             {sourceFile ? sourceFile : ""}
         </SyntaxHighlighter>
@@ -268,6 +533,36 @@ const ProjectBar : FC<ProjectBarProps> = ({treeIsOpen, handleOpenTree} : Project
   </AppBar>
 );
 
+const enumerateSuggestions = (sourceMap : SourceMap) => {
+  const suggestions : [string, string][] = [];
+  const suggestionEnumeration : { [fileId : string]: number } = {};
+  
+  if(sourceMap !== undefined) {
+    for(let [fileId, sourceFile] of Object.entries(sourceMap!)) {
+      if(sourceFile.Diagnostics) {
+        for(let { DiagnosticId } of sourceFile.Diagnostics!) {
+          suggestionEnumeration[DiagnosticId] = suggestions.length; 
+          suggestions.push([fileId, DiagnosticId]);
+        }
+      }
+    }
+  }
+
+  return {
+    invMap: suggestionEnumeration,
+    enum: suggestions,
+    indexOf: (fileId : string) => suggestionEnumeration[fileId],
+    suggestionOf: (idx : number) => suggestions[idx],
+  } as SuggestionEnumeration;
+}
+
+
+
+import { Fab } from '@mui/material';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import { Stack } from '@mui/material';
+
 export default function Analyizer() {
   const router = useRouter();
 
@@ -280,6 +575,29 @@ export default function Analyizer() {
   const { sourceMap, err } = useSourceMap(analysis_id);
   const [treeIsOpen, setTreeIsOpen] = useState(true);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  const [selectedSuggest, setSelectedSuggest] = useState<string | null>(null);
+
+  const enumerated = enumerateSuggestions(sourceMap!);
+
+  const rotateSelection = (amount : number) => () => {
+    let idx = selectedSuggest === null ? -amount : enumerated.indexOf(selectedSuggest!);
+    idx = ((idx + amount) + enumerated.enum.length) % enumerated.enum.length;
+ 
+    const [fileId, diagnosticId] = enumerated.suggestionOf(idx);
+
+    setSelectedFile(fileId);
+    setSelectedSuggest(diagnosticId);
+  }
+
+  const closeSuggestionCallback = (suggest : string) => () => {
+    if(selectedSuggest === suggest) {
+      setSelectedSuggest(null);
+    }
+  };
+
+  const openSuggestionCallback = (suggest : string) => () => {
+    setSelectedSuggest(suggest);
+  };
 
   const toggleTree =
     (open: boolean) =>
@@ -311,25 +629,59 @@ export default function Analyizer() {
     const fileName = sourceMap[selection!].name;
 
     return (
-        <Box sx={{ display: 'flex' }}>
-          <ProjectBar 
-            treeIsOpen={treeIsOpen} 
-            handleOpenTree={toggleTree(true)}
-          />
+        <>
+          <Box sx={{ display: 'flex' }}>
+            <ProjectBar 
+              treeIsOpen={treeIsOpen} 
+              handleOpenTree={toggleTree(true)}
+            />
             <CodeTree
+              setSelectedSuggest={setSelectedSuggest}
               treeIsOpen={treeIsOpen}
               sourceMap={sourceMap!}
               handleCloseTree={toggleTree(false)}
-              onFileSelect={(file_id, idx) => {
+              onFileSelect={(file_id) => {
                 setSelectedFile(file_id);
               }}
             />
-            <CodeViewer 
+            <CodeViewer
+              suggestionControl={{
+                closeSuggestionCallback,
+                openSuggestionCallback,
+                selectedSuggest
+              }}
+              sourceMap={sourceMap}
               treeIsOpen={treeIsOpen}
               fileId={selection!}
               fileName={fileName}
               analyisId={analysis_id}
+              enumerated={enumerated}
             />
-        </Box>
+            <Stack
+              sx={{
+                position: 'absolute',
+                right: '1em',
+                bottom: '1em'
+              }}
+              spacing={1}
+              direction="row"
+            >
+              <Fab
+                color="secondary"
+                aria-label="add"
+                onClick={rotateSelection(-1)}
+              >
+                <NavigateBeforeIcon />
+              </Fab>
+              <Fab
+                color="secondary"
+                aria-label="edit"
+                onClick={rotateSelection(1)}
+              >
+                <NavigateNextIcon />
+              </Fab>
+            </Stack>
+          </Box>
+        </>
     );
 }

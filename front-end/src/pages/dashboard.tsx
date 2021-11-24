@@ -17,20 +17,11 @@ import { useRouter } from 'next/router';
 import { useServer } from '../lib/server';
 import Header from "../components/Suggestion/header";
 
-
-
 declare module '@mui/material/AppBar' {
     interface AppBarColorOverrides {
         bg: true;
     }
 }
-
-
-
-
-  
-
-
 
 const HeaderBar : FC = () =>  (
     <AppBar
