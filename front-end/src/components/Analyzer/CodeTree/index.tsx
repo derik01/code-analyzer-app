@@ -108,7 +108,7 @@ const CodeTree : FC<CodeTreeProps> = ({
           </IconButton>
         </DrawerHeader>
             <TreeView
-              aria-label="file system navigator"
+              aria-label="warnings listed by file"
               defaultCollapseIcon={<ExpandMoreIcon />}
               defaultExpandIcon={<ChevronRightIcon />}
               onNodeSelect={handleSelect}

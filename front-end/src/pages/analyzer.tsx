@@ -71,6 +71,26 @@ export default function Analyzer({ showError } : DefaultPageProps) {
 
   const enumerated = enumerateSuggestions(sourceMap!);
 
+
+  const rotateSelection = (amount : number) => () => {
+    let idx = selectedSuggest === null ? -amount : enumerated.indexOf(selectedSuggest!);
+    idx = ((idx + amount) + enumerated.enum.length) % enumerated.enum.length;
+ 
+    const [fileId, diagnosticId] = enumerated.suggestionOf(idx);
+
+    setSelectedFile(fileId);
+    setSelectedSuggest(diagnosticId);
+    scrollTarget.current = diagnosticId;
+  }
+
+  const upHandler = ({ key } : KeyboardEvent) => {
+    if (key === 'ArrowRight') {
+      rotateSelection(1)();
+    } else if (key == 'ArrowLeft') {
+      rotateSelection(-1)();
+    }
+  };
+
   useEffect(() => {
     function scrollToElement(
       pageElement : HTMLElement | null,
@@ -98,19 +118,16 @@ export default function Analyzer({ showError } : DefaultPageProps) {
     }
   });
 
+  useEffect(() => {
+    window.addEventListener("keyup", upHandler);
+
+    return () => {
+      window.removeEventListener("keyup", upHandler);
+    };
+  }, [upHandler]);
+
   if(err) {
     return <Typography>Error encountered while rendering</Typography>;
-  }
-
-  const rotateSelection = (amount : number) => () => {
-    let idx = selectedSuggest === null ? -amount : enumerated.indexOf(selectedSuggest!);
-    idx = ((idx + amount) + enumerated.enum.length) % enumerated.enum.length;
- 
-    const [fileId, diagnosticId] = enumerated.suggestionOf(idx);
-
-    setSelectedFile(fileId);
-    setSelectedSuggest(diagnosticId);
-    scrollTarget.current = diagnosticId;
   }
 
   const closeSuggestionCallback = (suggest : string) => () => {

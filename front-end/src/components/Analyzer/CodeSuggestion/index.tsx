@@ -94,7 +94,7 @@ const CodeSuggestion : FC<CodeSuggestionProps> = ({children, Diagnostic, control
             onClose={control.closeSuggestionCallback(Diagnostic.DiagnosticId)}
             open={open}
             arrow
-            >
+        >
             <div id={Diagnostic.DiagnosticId}>
                 {children}
             </div>
