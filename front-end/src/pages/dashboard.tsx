@@ -15,42 +15,13 @@ import { useState } from "react";
 import { DefaultPageProps } from "./_app";
 import { useRouter } from 'next/router';
 import { useServer } from '../lib/server';
-import Header from "../components/Suggestion/header";
+import Header from "../components/Header";
 
 declare module '@mui/material/AppBar' {
     interface AppBarColorOverrides {
         bg: true;
     }
 }
-
-const HeaderBar : FC = () =>  (
-    <AppBar
-        position="static"
-        color="bg"
-        sx={{
-            marginBottom: '3em',
-        }}
-    >
-        <Toolbar color="primary">
-            <IconButton
-                color="primary"
-                aria-label="code analyzer-logo" 
-                size="large"
-            >
-                <CodeIcon
-                    fontSize="inherit"
-                />            
-            </IconButton>
-            <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                Code Analyzer
-            </Typography>
-            <Button 
-                color="primary"
-                variant="outlined"
-            >Logout</Button>
-        </Toolbar>
-    </AppBar>
-);
 
 type DropZoneProps = {
     onDrop : <T extends File>(acceptedFiles: T[]) => void;
