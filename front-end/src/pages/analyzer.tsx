@@ -4,7 +4,8 @@ import { useRouter } from 'next/router';
 import {
   Fab,
   Stack,
-  Box
+  Box,
+  Typography
 } from '@mui/material';
 
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -18,6 +19,8 @@ import { ProjectBar } from '../components/Analyzer/Header';
 import { useSourceMap } from '../lib/data';
 
 import enumerateSuggestions from '../components/Analyzer/enumerateSuggestions';
+
+import NoSsr from '@mui/base/NoSsr';
 
 type NextPrevButtonProps = {
   onNextClick: () => void;
@@ -51,16 +54,15 @@ const NextPrevButtons : FC<NextPrevButtonProps> = ({onNextClick, onPrevClick}) =
   </Stack>
 );
 
-export default function Analyzer() {
+import { DefaultPageProps } from './_app';
+import { Backdrop, CircularProgress } from '@mui/material';
+
+export default function Analyzer({ showError } : DefaultPageProps) {
   const router = useRouter();
 
   const analysis_id = router.query.analysis_id as string | undefined;
   const sharing = router.query.sharing === 'true';
   
-  if(!analysis_id) {
-    return <h1>No analysis id provided</h1>;
-  }
-
   const { sourceMap, err } = useSourceMap(analysis_id);
   const [treeIsOpen, setTreeIsOpen] = useState(true);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
@@ -94,8 +96,11 @@ export default function Analyzer() {
         scrollToElement(el, [0, -window.innerHeight / 2]);
       }
     }
-
   });
+
+  if(err) {
+    return <Typography>Error encountered while rendering</Typography>;
+  }
 
   const rotateSelection = (amount : number) => () => {
     let idx = selectedSuggest === null ? -amount : enumerated.indexOf(selectedSuggest!);
@@ -133,7 +138,7 @@ export default function Analyzer() {
   };
 
     if(!sourceMap) {
-      return <h1>Loading</h1>;
+      return <Typography>Loading...</Typography>
     }
 
     let selection = selectedFile;
@@ -167,19 +172,21 @@ export default function Analyzer() {
                 setSelectedFile(file_id);
               }}
             />
-            <CodeViewer
-              suggestionControl={{
-                closeSuggestionCallback,
-                openSuggestionCallback,
-                selectedSuggest
-              }}
-              sourceMap={sourceMap}
-              treeIsOpen={treeIsOpen}
-              fileId={selection!}
-              fileName={fileName}
-              analyisId={analysis_id}
-              enumerated={enumerated}
-            />
+            <NoSsr>
+              <CodeViewer
+                suggestionControl={{
+                  closeSuggestionCallback,
+                  openSuggestionCallback,
+                  selectedSuggest
+                }}
+                sourceMap={sourceMap}
+                treeIsOpen={treeIsOpen}
+                fileId={selection!}
+                fileName={fileName}
+                analyisId={analysis_id!}
+                enumerated={enumerated}
+              />
+            </NoSsr>
             <NextPrevButtons
               onNextClick={rotateSelection(1)}
               onPrevClick={rotateSelection(-1)}

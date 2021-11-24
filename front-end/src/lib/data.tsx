@@ -5,14 +5,14 @@ import { SourceMap } from '../lib/LinterAnalysis';
 const fetcher = (url : string) => 
     fetch(url).then((res) => res.json());
 
-const useSourceMap = (analyisId : string) => {
+const useSourceMap = (analyisId : string | undefined) => {
     const { data, error } = useSWR<SourceMap>(`/user/analysis/${analyisId}`, fetcher);
 
     return {
         sourceMap: data,
         err: error
     };
-}
+};
 
 const useSourceFile = (analyisId : string, fileId : string) => {
     const search = new URLSearchParams();
@@ -27,7 +27,7 @@ const useSourceFile = (analyisId : string, fileId : string) => {
         sourceFile: data,
         err: error
     };
-}
+};
 
 export {
     useSourceFile,

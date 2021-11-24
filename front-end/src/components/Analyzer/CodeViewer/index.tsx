@@ -58,6 +58,10 @@ const CodeViewer : FC<CodeViewerProps> = ({
     enumerated
 } : CodeViewerProps) => {
     const { sourceFile, err } = useSourceFile(analyisId, fileId);
+
+    if(err) {
+        return <Typography>Encountered error while fetching file</Typography>;
+    }
     
     const diagnostics = sourceMap[fileId].Diagnostics!;
 
