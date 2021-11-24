@@ -1,4 +1,4 @@
-import React, { FC, ReactChild, ReactElement, useState } from 'react';
+import React, { FC, ReactChild, ReactElement, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 
@@ -203,7 +203,7 @@ import { Diagnostic } from '../lib/LinterAnalysis';
 
 
 type SuggestionEnumeration = {
-  invMap: { [fileId : string]: number };
+  invMap: { [diagnosticId : string]: number };
   enum: [string, string][];
   indexOf: (fileId : string) => number;
   suggestionOf: (idx : number) => [string, string];
@@ -226,6 +226,12 @@ import Chip from '@mui/material/Chip';
 const CodeSuggestion : FC<CodeSuggestionProps> = ({children, Diagnostic, control, enumerated, ...props}) => {
   const Icon = Diagnostic.Level === "Warning" ? WarningAmberIcon : ErrorOutlineIcon;
   const open = control.selectedSuggest === Diagnostic.DiagnosticId;
+
+  let msg = Diagnostic.DiagnosticMessage.Message;
+
+  if(Diagnostic.DiagnosticMessage.EOF) {
+    msg += " (Identified at end of file.)"
+  }
 
   return (
     <HtmlTooltip
@@ -258,7 +264,7 @@ const CodeSuggestion : FC<CodeSuggestionProps> = ({children, Diagnostic, control
             margin: '0.25em 0'
           }}>
           <Typography variant="body2">
-            {Diagnostic.DiagnosticMessage.Message}
+            {msg}
           </Typography>
           </div>
           <div style={{display: 'flex'}}>
@@ -279,7 +285,9 @@ const CodeSuggestion : FC<CodeSuggestionProps> = ({children, Diagnostic, control
       open={open}
       arrow
     >
-      {children}
+      <div id={Diagnostic.DiagnosticId}>
+        {children}
+      </div>
     </HtmlTooltip>
   );
 }
@@ -290,7 +298,7 @@ type LineMap = {
   [linenum : number]: AnnotatedDiagnostic[] | undefined;
 };
 
-const WrappingRenderer = (diagnostics? : Diagnostic[], control : SuggestionControl, enumerated : SuggestionEnumeration) => {
+const WrappingRenderer = (diagnostics : Diagnostic[], control : SuggestionControl, enumerated : SuggestionEnumeration) => {
   const lineMap : LineMap = {};
   const eofSuggestions : Diagnostic[] = [];
 
@@ -351,7 +359,7 @@ const WrappingRenderer = (diagnostics? : Diagnostic[], control : SuggestionContr
         }
 
         let wrapped = codeTag;
-
+        let layers = 0;
         while(diagIdx < lineDiagnostics.length && textContent.length + offset > lineDiagnostics[diagIdx][0]) {
           let endStyle = {};
 
@@ -363,10 +371,19 @@ const WrappingRenderer = (diagnostics? : Diagnostic[], control : SuggestionContr
 
           const diagnostic = lineDiagnostics[diagIdx][1];
           
+          let _controls = control;
+
+          if(layers > 0) {
+            _controls = {
+              ...control,
+              openSuggestionCallback: (suggest) => () => {},
+            }
+          }
+          
           wrapped = (
             <CodeSuggestion
               Diagnostic={diagnostic}
-              control={control}
+              control={_controls}
               enumerated={enumerated}
             >
               <div
@@ -381,6 +398,7 @@ const WrappingRenderer = (diagnostics? : Diagnostic[], control : SuggestionContr
             </CodeSuggestion>
           );
 
+          layers++;
           diagIdx++;
         }
 
@@ -507,7 +525,13 @@ type ProjectBarProps = {
 import LinkIcon from '@mui/icons-material/Link';
 
 const ProjectBar : FC<ProjectBarProps> = ({treeIsOpen, handleOpenTree} : ProjectBarProps) => (
-  <AppBar position="fixed" open={treeIsOpen}>
+  <AppBar
+    position="fixed"
+    open={treeIsOpen}
+    sx={{
+      zIndex: 10000
+    }}
+  >
     <Toolbar>
       <IconButton
         color="inherit"
@@ -563,6 +587,8 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { Stack } from '@mui/material';
 
+import { useRef } from 'react';
+
 export default function Analyizer() {
   const router = useRouter();
 
@@ -576,8 +602,37 @@ export default function Analyizer() {
   const [treeIsOpen, setTreeIsOpen] = useState(true);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [selectedSuggest, setSelectedSuggest] = useState<string | null>(null);
+  const scrollTarget = useRef<string | null>(null);
 
   const enumerated = enumerateSuggestions(sourceMap!);
+
+  useEffect(() => {
+    function scrollToElement(
+      pageElement : HTMLElement | null,
+      offset: [number, number]  
+    ) {
+      let positionX = 0,
+          positionY = 0;
+  
+      while(pageElement != null){        
+          positionX += pageElement.offsetLeft;        
+          positionY += pageElement.offsetTop;        
+          pageElement = pageElement.offsetParent as HTMLElement | null;
+          window.scrollTo(positionX + offset[0], positionY + offset[1]);
+      }
+      
+      scrollTarget.current = null;
+    }
+
+    const diagnosticId = scrollTarget.current;
+    if(diagnosticId !== null) {
+      const el = document.getElementById(diagnosticId);
+      if(el !== null) {
+        scrollToElement(el, [0, -window.innerHeight / 2]);
+      }
+    }
+
+  });
 
   const rotateSelection = (amount : number) => () => {
     let idx = selectedSuggest === null ? -amount : enumerated.indexOf(selectedSuggest!);
@@ -587,6 +642,7 @@ export default function Analyizer() {
 
     setSelectedFile(fileId);
     setSelectedSuggest(diagnosticId);
+    scrollTarget.current = diagnosticId;
   }
 
   const closeSuggestionCallback = (suggest : string) => () => {
@@ -636,7 +692,10 @@ export default function Analyizer() {
               handleOpenTree={toggleTree(true)}
             />
             <CodeTree
-              setSelectedSuggest={setSelectedSuggest}
+              setSelectedSuggest={(diagnosticId : string | null) => {
+                setSelectedSuggest(diagnosticId);
+                scrollTarget.current = diagnosticId;
+              }}
               treeIsOpen={treeIsOpen}
               sourceMap={sourceMap!}
               handleCloseTree={toggleTree(false)}
@@ -659,7 +718,7 @@ export default function Analyizer() {
             />
             <Stack
               sx={{
-                position: 'absolute',
+                position: 'fixed',
                 right: '1em',
                 bottom: '1em'
               }}
