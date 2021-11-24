@@ -94,7 +94,7 @@ const UploadPannel : FC = () => (
         <Typography
             variant="subtitle1"
         >
-            Code analyzer allow you to analyize and grade your c++ code. Simple choose a file to upload and await the results!
+            Code analyzer allows you to analyze your C++ code. Simple choose a file to upload and await the results!
         </Typography>
     </Box>
 );
