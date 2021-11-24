@@ -12,6 +12,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 
 import CodeViewer from '../components/Analyzer/CodeViewer';
 import CodeTree from '../components/Analyzer/CodeTree';
+
 import { ProjectBar } from '../components/Analyzer/Header';
 
 import { useSourceMap } from '../lib/data';
@@ -54,7 +55,8 @@ export default function Analyzer() {
   const router = useRouter();
 
   const analysis_id = router.query.analysis_id as string | undefined;
-
+  const sharing = router.query.sharing === 'true';
+  
   if(!analysis_id) {
     return <h1>No analysis id provided</h1>;
   }
@@ -151,6 +153,7 @@ export default function Analyzer() {
             <ProjectBar 
               treeIsOpen={treeIsOpen} 
               handleOpenTree={toggleTree(true)}
+              sharing={sharing}
             />
             <CodeTree
               setSelectedSuggest={(diagnosticId : string | null) => {

@@ -15,6 +15,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 
 import { styled } from '@mui/material/styles';
 
+import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
+
 import { drawerWidth } from '../constants';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -81,9 +83,14 @@ const HeaderBar : FC = () =>  (
 type ProjectBarProps = {
     handleOpenTree: EventCallback;
     treeIsOpen: boolean;
+    sharing: boolean;
 };
 
-const ProjectBar : FC<ProjectBarProps> = ({treeIsOpen, handleOpenTree} : ProjectBarProps) => (
+const ProjectBar : FC<ProjectBarProps> = ({
+    treeIsOpen,
+    handleOpenTree,
+    sharing
+} : ProjectBarProps) => (
     <AppBar
       position="fixed"
       open={treeIsOpen}
@@ -104,14 +111,32 @@ const ProjectBar : FC<ProjectBarProps> = ({treeIsOpen, handleOpenTree} : Project
         <Typography variant="h5" sx={{ flexGrow: 1 }} noWrap component="div">
           Analysis Results
         </Typography>
-        <IconButton
+        { !sharing ? (<>
+            <IconButton
                 size="large"
                 aria-label="sharing link"
                 aria-haspopup="true"
                 color="inherit"
-        >
-          <LinkIcon />
-        </IconButton>
+                onClick={() => {
+                    const url = new URL(window.location.href);
+                    url.searchParams.append('sharing', 'true');
+                    navigator.clipboard.writeText(url.toString());
+                }}
+            >
+            <LinkIcon />
+            </IconButton>
+            <IconButton
+                size="large"
+                aria-label="return to dashboard"
+                aria-haspopup="true"
+                color="inherit"
+                href="/dashboard"
+            >
+                <KeyboardReturnIcon />
+            </IconButton>
+            </>) 
+            : undefined 
+        }
       </Toolbar>
     </AppBar>
 );

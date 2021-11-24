@@ -139,7 +139,7 @@ export default function Dashboard({ showError } : DefaultPageProps) {
         .then(res => {
             
             router.push({
-                pathname: '/analyizer',
+                pathname: '/analyzer',
                 query: {
                     analysis_id: res.analysis_id
                 },
