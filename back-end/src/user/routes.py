@@ -171,8 +171,9 @@ def upload_file():
             file_name = file_path.split('/')[-1]
             # Used to create a (id, offset) -> (id, (line, char)) mapping
             # see add_diagnostic_location
-            current_error["DiagnosticId"] = str(uuid4())
-            ret_dict[names_dict[file_name]]["Diagnostics"].append(current_error)
+            if file_name in names_dict:
+                current_error["DiagnosticId"] = str(uuid4())
+                ret_dict[names_dict[file_name]]["Diagnostics"].append(current_error)
 
         add_diagnostic_location(ret_dict, tmp_dir)
 
