@@ -120,6 +120,8 @@ def upload_file():
     suggestions = ""
     file_paths = []
     names_dict = {}
+    analysis = db.analyses.insert_one({})
+    path_id = str(analysis.inserted_id)
 
     for file in uploaded_files:
         if not allowed_file(file.filename):
@@ -136,7 +138,7 @@ def upload_file():
             uuid_name = str(uuid4())
             names_dict[file.filename] = uuid_name
             
-            upload_file_key = 'files/' + uuid_name
+            upload_file_key = path_id + '/' + uuid_name
             client.upload_file(str(temp_path), upload_file_bucket, upload_file_key)
 
         with tempfile.NamedTemporaryFile('w+') as file:
@@ -177,11 +179,11 @@ def upload_file():
     json_dict = json.dumps(ret_dict, indent = 4)
 
     analysis_id = str(uuid4())
-    upload_file_key = 'files/' + analysis_id
+    upload_file_key = path_id + '/response.json'
     client.put_object(Bucket = upload_file_bucket, Key = upload_file_key, Body = json_dict)
 
     return jsonify({
-        'analysis_id': analysis_id
+        'analysis_id': path_id
     })
 
 @user.route('/analysis/<analysis_id>/get_file', methods=['GET'])
@@ -189,26 +191,24 @@ def get_file(analysis_id):
 
     file_id = request.args.get('file_id')
 
-    print(file_id)
+    response = ""
 
-    id_to_source = {
-        '0': 'hello.cpp',
-        '1': 'hello.hpp',
-    }
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        client.download_file(upload_file_bucket, analysis_id + '/' + file_id, tmp_dir + '/' + file_id)
+        with open(tmp_dir + '/' + file_id) as file:
+            response = file.read()
 
-    if file_id not in id_to_source:
-        return err.FILE_ID_NOT_VALID.responsify()
-    
-    path = safe_join('./user/sample_files', id_to_source[file_id])
-
-    return send_file(path)
+    return response
 
 # Stream with context
 @user.route('/analysis/<analysis_id>', methods=['GET'])
 def get_analysis(analysis_id):
     response = {}
-    
-    with open('./src/user/sample_files/response.json') as file:
-        response = json.load(file)
+
+    # return analysis_id
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        client.download_file(upload_file_bucket, analysis_id + '/response.json', tmp_dir + '/response.json')
+        with open(tmp_dir + '/response.json') as file:
+            response = json.load(file)
     
     return jsonify(response)
