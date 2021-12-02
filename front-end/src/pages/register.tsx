@@ -15,7 +15,7 @@ import { useRouter } from 'next/router';
 import { useServer, ERRCODE } from '../lib/server';
 
 export type State = {
-  username: string,
+  email: string,
   password: string,
   errmsg: string,
   isButtonDisabled: boolean,
@@ -24,7 +24,7 @@ export type State = {
 };
 
 export const initialState: State = {
-  username: "",
+  email: "",
   password: "",
   errmsg: "",
   isButtonDisabled: true,
@@ -45,7 +45,7 @@ export const reducer = (state: State, action: Action): State => {
     case "setUsername":
       return {
         ...state,
-        username: action.payload
+        email: action.payload
       };
     case "setPassword":
       return {
@@ -84,7 +84,7 @@ const Register = () => {
   });
 
   useEffect(() => {
-    if (state.username.trim() && state.password.trim()) { 
+    if (state.email.trim() && state.password.trim()) { 
       dispatch({
         type: "setIsButtonDisabled",
         payload: false
@@ -95,14 +95,14 @@ const Register = () => {
         payload: true
       });
     }
-  }, [state.username, state.password]);
+  }, [state.email, state.password]);
 
   //-------------------------------------------------------------------------------------------
   const handleSignup = () => {
     const server = useServer();
     const router = useRouter();  
 
-     const valid = server.signup(state.username, state.password);
+     const valid = server.signup(state.email, state.password);
 
      valid.then(res => {
         router.push({

@@ -14,7 +14,7 @@ import { useRouter } from 'next/router';
 import { useServer } from '../lib/server';
 
 export type State = {
-  username: string,
+  email: string,
   password: string,
   login: string,
   isButtonDisabled: boolean,
@@ -23,8 +23,9 @@ export type State = {
 };
 
 export const initialState: State = {
-  username: "",
+  email: "",
   password: "",
+  login: "",
   isButtonDisabled: true,
   helperText: "",
   isError: false
@@ -43,7 +44,7 @@ export const reducer = (state: State, action: Action): State => {
     case "setUsername":
       return {
         ...state,
-        username: action.payload
+        email: action.payload
       };
     case "setPassword":
       return {
@@ -83,7 +84,7 @@ const Login = () => {
   });
 
   useEffect(() => {
-    if (state.username.trim() && state.password.trim()) {
+    if (state.email.trim() && state.password.trim()) {
       dispatch({
         type: "setIsButtonDisabled",
         payload: false
@@ -94,18 +95,18 @@ const Login = () => {
         payload: true
       });
     }
-  }, [state.username, state.password]);
+  }, [state.email, state.password]);
   
 
   const handleLogin = () => {
     const server = useServer();
     const router = useRouter();  
-    const valid = server.signin(state.username, state.password);
+    const valid = server.signin(state.email, state.password);
 
      valid.then(res => {
         router.push({
           pathname: './dashboard'
-        })
+        }); 
      })
 
      valid.catch(err => {

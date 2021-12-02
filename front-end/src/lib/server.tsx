@@ -15,6 +15,9 @@ export type AnalysisResponse = {
     analysis_id: string;
 };
 
+
+
+
 const useServer = () => {
 
     const cannonicalizeErrorHanding = (err : any) => {
@@ -51,15 +54,15 @@ const useServer = () => {
     }
 
     const Server = {
-        signin: (username : string, password : string) => {
+        signin: (email : string, password : string) => {
             return postJSON('/auth/login', {
-                username,
+                email,
                 password,
             }) as Promise<{}>;
         },
-        signup: (username : string, password : string) => {
+        signup: (email : string, password : string) => {
             return postJSON('/auth/register', {
-                username,
+                email,
                 password,
             }) as Promise<{}>;
         },
@@ -77,6 +80,7 @@ const useServer = () => {
             .then(forceJSON)
             .catch(cannonicalizeErrorHanding) as Promise<AnalysisResponse>;
         }
+  
     };
 
     return Server;

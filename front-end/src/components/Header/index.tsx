@@ -75,7 +75,7 @@ export default function PrimarySearchAppBar() {
   };
   //temp log out stuff
   const handleLogOut = () => {
-    setLoggedIn(false);
+    router.push('../');
   }
 
   const handleSettings = () =>{
