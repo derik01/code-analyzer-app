@@ -186,6 +186,7 @@ def upload_file():
         'analysis_id': path_id
     })
 
+# returns file contents given file id
 @user.route('/analysis/<analysis_id>/get_file', methods=['GET'])
 def get_file(analysis_id):
 
@@ -200,12 +201,11 @@ def get_file(analysis_id):
 
     return response
 
-# Stream with context
+# Returns the response json of each analysis request
 @user.route('/analysis/<analysis_id>', methods=['GET'])
 def get_analysis(analysis_id):
     response = {}
 
-    # return analysis_id
     with tempfile.TemporaryDirectory() as tmp_dir:
         client.download_file(upload_file_bucket, analysis_id + '/response.json', tmp_dir + '/response.json')
         with open(tmp_dir + '/response.json') as file:
