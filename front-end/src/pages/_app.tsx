@@ -31,7 +31,7 @@ export default function MyApp(props: MyAppProps) {
     
     <CacheProvider value={emotionCache}>
       <Head>
-        <title>Code Analyzer</title>
+        <title>AutoCheck!</title>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <ThemeProvider theme={theme}>

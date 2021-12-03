@@ -39,7 +39,6 @@ access_key = "AKIAUX7NV5IPOEUTHQ7Z"
 secret_access_key = "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"
 upload_file_bucket = 'csce315project3files'
 client = boto3.client('s3', aws_access_key_id = access_key, aws_secret_access_key = secret_access_key)
-# email_client = boto3.client('ses', aws_access_key_id = access_key, aws_secret_access_key = secret_access_key)
 
 @user.route('/ping', methods=['GET'])
 def ping_pong():

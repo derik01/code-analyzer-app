@@ -16,9 +16,6 @@ import { DefaultPageProps } from "./_app";
 import { useRouter } from 'next/router';
 import { useServer } from '../lib/server';
 import Header from "../components/Header";
-import Cookies from 'js-cookie';
-
-
 
 declare module '@mui/material/AppBar' {
     interface AppBarColorOverrides {
