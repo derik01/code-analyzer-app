@@ -210,10 +210,10 @@ def upload_file():
             CMD = [
                 'clang-tidy',
                 f'--export-fixes={file.name}', 
-                '-checks=-*,bugprone-*,cppcoreguidelines-*',
-                '--header-filter=./', 
+                '-checks=-*,bugprone-*,cppcoreguidelines-*,clang-analyzer*,readability-*',
+                '--header-filter=./',
+                '--extra-arg=-stdlib=libstdc++', 
                 *temp_files_paths,
-                '--extra-arg=-stdlib=libstdc++',
             ]
 
             subprocess.run(CMD, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
