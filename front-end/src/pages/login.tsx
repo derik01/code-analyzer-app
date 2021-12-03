@@ -15,7 +15,7 @@ export default function Index() {
             Code Analyzer
           </Typography>
           <Button
-            href="/login"
+            href="/"
             id="loginBtn"
             size="large"
             edge="start"
