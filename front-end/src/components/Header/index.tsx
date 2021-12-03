@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import BulletPoint from '@mui/icons-material/ArrowRight';
 import Menu from '@mui/material/Menu';
 import PastSubmissions from '@mui/icons-material/AccessTime';
 import MoreIcon from '@mui/icons-material/MoreVert';
@@ -74,7 +74,11 @@ const PastSub : FC<PastSubProps> = ({analysisID, date, ...props} : PastSubProps)
 
   return(
       
-      <p><h4><b>Submitted:</b></h4>{date}</p>
+      <p>
+        <Box sx = {{display: 'inline-flex'}}>
+        <BulletPoint/>Submitted on {date}
+        </Box>
+      </p>
 
     
   ) 
