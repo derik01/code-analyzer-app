@@ -12,7 +12,7 @@ export default function Index() {
         <Toolbar>
 
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Code Analyzer
+            AutoCheck!
           </Typography>
           <Button
             href="/"

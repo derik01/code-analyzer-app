@@ -71,7 +71,7 @@ const HeaderBar : FC = () =>  (
                 />            
             </IconButton>
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                Code Analyzer
+                AutoCheck!
             </Typography>
             <Button 
                 color="primary"

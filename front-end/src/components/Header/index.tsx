@@ -17,7 +17,7 @@ import Logout from '@mui/icons-material/Logout';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useRouter} from 'next/router';
-import { useServer } from '../../lib/server';
+import { Err, useServer } from '../../lib/server';
 
 
 
@@ -66,12 +66,10 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 type PastSubProps = {
   analysisID: string;
-  date: string[];
+  date: string;
 };
 
-type analysisID = {
-  ids : string[]
-}
+
 
 const PastSub : FC<PastSubProps> = ({analysisID, date, ...props} : PastSubProps) => {
 
@@ -87,23 +85,40 @@ const PastSub : FC<PastSubProps> = ({analysisID, date, ...props} : PastSubProps)
   ) 
 };
 
+import { usePastAnalyses, pastSubmissions } from '../../lib/data';
+import { DefaultPageProps } from "../../pages/_app";
 
-export default function PrimarySearchAppBar() {
+export default function PrimarySearchAppBar({ showError } : DefaultPageProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
-    React.useState<null | HTMLElement>(null);
-  const [analysesID, setAnalysesID] = React.useState<analysisID | null>(null);
-  const [isPastSubmissions, setIsPastSubmissions] = React.useState<Boolean>(false);
+  
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
+
   const [open, setOpen] = React.useState(false);
+
+  const [error, setError] = React.useState<Err| null>(null);
+  
   const handleClose = () => {
     setOpen(false);
   };
+  
   const handleToggle = () => {
     setOpen(!open);
   };
+  
   const router = useRouter();
-  const server = useServer();
-  let pastSubmissions = undefined;
+
+  const { pastAnalyses, err: fetch_err } = usePastAnalyses();
+  
+  if(fetch_err && error == null) {
+    setError(fetch_err);
+
+    showError({
+      msg: "Could not fetch the past analysis. Are you connected to the internet?",
+      code: "PAST_ANALYSIS"
+    });
+  } else if (!fetch_err && error != null) {
+    setError(null);
+  }
 
   const handlePastSub = (analysesID : string) =>{
       handleToggle();
@@ -115,46 +130,22 @@ export default function PrimarySearchAppBar() {
       })
   }
 
-  React.useEffect(() =>{
-    fetch('/user/get_analyses')
-    .then(res => res.json()
-      
-    ).then((success : analysisID) => 
-      {
+  let pastSubmissions = undefined;
 
-        console.log(success);
-        Object.entries(success!).map(([i,a])=>{
-          console.log(a);
-          if(a.length !== 0){setIsPastSubmissions(true)}
-        })
-        setAnalysesID(success);
-       
-        
-       
-      })
-    .catch(err => console.log(err));
-
-  }, [])
-
-  if(analysesID !== null){
-      
-      if(isPastSubmissions){
-        let count = 0;
-        pastSubmissions = Object.entries(analysesID!).map(([analy,d]) =>
-        <MenuItem onClick = {() => handlePastSub(analy)}>
-        <PastSub key = {`${analy}`} analysisID = {analy} date = {d} />
-        </MenuItem>)
-      }
-      else{
-        pastSubmissions = <MenuItem><p>No Past Submissions</p></MenuItem>
-     } 
+  if(pastAnalyses){  
+    const analysisEntries = Object.entries(pastAnalyses);
+    
+    if(analysisEntries.length > 0){
+      pastSubmissions = analysisEntries.map(([id, date]) =>
+      <MenuItem onClick = {() => handlePastSub(id)}>
+        <PastSub key={id} analysisID = {id} date={date} />
+      </MenuItem>
+      );
+    } else{
+      pastSubmissions = <MenuItem><p>No Past Submissions</p></MenuItem>
     }
- 
-
- 
+  }
   
-
-
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 

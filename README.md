@@ -1,4 +1,4 @@
-315 Code Analyzer Application
+AutoCheck! - 315 Application
 =============================
 
 Running in development mode:

@@ -164,7 +164,7 @@ export default function Dashboard({ showError } : DefaultPageProps) {
     return (
         <>
         <Box sx={{ flexGrow: 1 }}>
-        <Header />
+        <Header showError={showError} />
             <Container>
                 <Paper
                     elevation={3}

@@ -14,6 +14,10 @@ const useSourceMap = (analyisId : string | undefined) => {
     };
 };
 
+export type pastSubmissions = {
+    [analysId : string]: string
+};
+
 const useSourceFile = (analyisId : string, fileId : string) => {
     const search = new URLSearchParams();
     search.append('file_id', fileId);
@@ -29,7 +33,20 @@ const useSourceFile = (analyisId : string, fileId : string) => {
     };
 };
 
+const usePastAnalyses = () => {
+    const { data, error } = useSWR<pastSubmissions>(
+        '/user/get_analyses',
+        fetcher
+    );
+
+    return {
+        pastAnalyses: data,
+        err: error
+    };
+}
+
 export {
     useSourceFile,
-    useSourceMap
+    useSourceMap,
+    usePastAnalyses
 };
