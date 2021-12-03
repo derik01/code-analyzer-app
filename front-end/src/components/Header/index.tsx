@@ -8,7 +8,6 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
-import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
 import BulletPoint from '@mui/icons-material/RadioButtonChecked';
 import Menu from '@mui/material/Menu';
@@ -17,7 +16,6 @@ import MoreIcon from '@mui/icons-material/MoreVert';
 import Logout from '@mui/icons-material/Logout';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-import Button from '@mui/material/Button';
 import { useRouter} from 'next/router';
 import { useServer } from '../../lib/server';
 
@@ -160,17 +158,11 @@ export default function PrimarySearchAppBar() {
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+
 
   const handleLogOut = () => {
     document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     router.push('../');
-  }
-
-  const handleSettings = () =>{
-        router.push('./test');
   }
 
   const handleMobileMenuClose = () => {
