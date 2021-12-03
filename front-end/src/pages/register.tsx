@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import { Paper } from "@mui/material";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import Index from './index'
+import Index from './login'
 import { DefaultPageProps } from "./_app";
 import { useRouter } from 'next/router';
 import { useServer } from '../lib/server';
@@ -28,7 +28,7 @@ const SignUp = () => {
 
     response.then(res => {
       router.push({
-        pathname: './login'
+        pathname: './'
       })
    })
       response.catch(err => {

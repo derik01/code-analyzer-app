@@ -10,11 +10,14 @@ import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
-import BulletPoint from '@mui/icons-material/ArrowRight';
+import BulletPoint from '@mui/icons-material/RadioButtonChecked';
 import Menu from '@mui/material/Menu';
 import PastSubmissions from '@mui/icons-material/AccessTime';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import Logout from '@mui/icons-material/Logout';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import Button from '@mui/material/Button';
 import { useRouter} from 'next/router';
 import { useServer } from '../../lib/server';
 
@@ -61,6 +64,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+
+
 type PastSubProps = {
   analysisID: string;
   date: string[];
@@ -74,9 +79,9 @@ const PastSub : FC<PastSubProps> = ({analysisID, date, ...props} : PastSubProps)
 
   return(
       
-      <p>
+      <p> 
         <Box sx = {{display: 'inline-flex'}}>
-        <BulletPoint/>Submitted on {date}
+        <BulletPoint sx = {{marginRight: '.5rem'}}/> Submitted on {date}
         </Box>
       </p>
 
@@ -91,11 +96,19 @@ export default function PrimarySearchAppBar() {
     React.useState<null | HTMLElement>(null);
   const [analysesID, setAnalysesID] = React.useState<analysisID | null>(null);
   const [isPastSubmissions, setIsPastSubmissions] = React.useState<Boolean>(false);
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleToggle = () => {
+    setOpen(!open);
+  };
   const router = useRouter();
   const server = useServer();
   let pastSubmissions = undefined;
 
   const handlePastSub = (analysesID : string) =>{
+      handleToggle();
       router.push({
         pathname: '/analyzer',
         query: {
@@ -153,7 +166,7 @@ export default function PrimarySearchAppBar() {
 
   const handleLogOut = () => {
     document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    router.push('../login');
+    router.push('../');
   }
 
   const handleSettings = () =>{
@@ -218,6 +231,7 @@ export default function PrimarySearchAppBar() {
   );
 
     return (
+      
         <Box sx={{ flexGrow: 1, paddingBottom: 5 }}>
           <AppBar position="static">
             <Toolbar>
@@ -273,9 +287,18 @@ export default function PrimarySearchAppBar() {
               </Box>
             </Toolbar>
           </AppBar>
+                <Backdrop
+                  sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                  open={open}
+                  onClick={handleClose}
+                  >
+                 <CircularProgress color="inherit" />
+                </Backdrop>
           {renderMobileMenu}
           {renderMenu}
         </Box>
+       
+        
       );
   
   

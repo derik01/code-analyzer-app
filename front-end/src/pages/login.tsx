@@ -1,104 +1,49 @@
-import React, { useReducer, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
-import CardHeader from "@mui/material/CardHeader";
-import Button from "@mui/material/Button";
-import { Paper } from "@mui/material";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Index from './index'
-import { useRouter } from 'next/router';
-import { useServer } from '../lib/server';
+import * as React from 'react';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
-
-
-const Login = () => {
-  const server = useServer();
-  const router = useRouter();
-  const [formValue, setformValue] = React.useState({
-    email: "",
-    password: ""
-  });
-
-  async function submitForm(event: React.KeyboardEvent<HTMLInputElement>) {
-    setformValue({ ...formValue, [event.currentTarget.type]: event.currentTarget.value});
-
-    const response = server.signin(formValue.email, formValue.password);
-
-    
-    response.then(res => {
-      router.push({
-        pathname: './dashboard'
-      })
-   })
-      response.catch(err => {
-        alert(err.msg + ": " + err.code)
-        console.error(err.msg + ": " + err.code)
-    });
-
-    setformValue({ ...formValue, [event.currentTarget.type]: event.currentTarget.value});
-  }
-
-  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (
-    event
-  ) => {
-    setformValue({ ...formValue, [event.currentTarget.type]: event.currentTarget.value })
-  };
-
+export default function Index() {
   return (
-    <Box width="100%"> 
-      <Index  />
-    <Grid align="center" padding="40px">
-      <Box sx={{ flexGrow: 1 }} maxWidth="500px">
-        <Paper elevation={3}>
-          <form id="formSubmit" noValidate autoComplete="off">
-            <Card>
-              <CardHeader title="Login" />
-              <CardContent>
-                <div>
-                  <TextField
-                    fullWidth
-                    id="email"
-                    type="email"
-                    value={formValue.email}
-                    label="Email"
-                    placeholder="Email"
-                    margin="normal"
-                    onChange={handleChange}
-                  />
-                  <TextField
-                    fullWidth
-                    id="password"
-                    type="password"
-                    value={formValue.password}
-                    label="Password"
-                    placeholder="Password"
-                    margin="normal"
-                    onChange={handleChange}
-                  />
-                </div>
-              </CardContent>
-              <CardActions>
-                <Button
-                  variant="contained"
-                  size="large"
-                  color="inherit"
-                  className="Btn"
-                  onClick={submitForm}
-                  enabled
-                >
-                  Login
-                </Button>
-              </CardActions>
-            </Card>
-          </form>
-        </Paper>
-      </Box>
-    </Grid>
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static">
+        <Toolbar>
+
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Code Analyzer
+          </Typography>
+          <Button
+            href="/login"
+            id="loginBtn"
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            position="right"
+            sx={{ mr: 2 }}
+          >
+            Login
+          </Button>
+          <Button
+            href="/register"
+            id="loginBtn"
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            position="right"
+            sx={{ mr: 2 }}
+          >
+            Sign Up
+          </Button>
+        </Toolbar>
+      </AppBar>
     </Box>
   );
 }
-
-export default Login;

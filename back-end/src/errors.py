@@ -61,3 +61,9 @@ class err:
         'We don\'t reconize this username',
         BAD_REQUEST
     )
+
+    BAD_PASSWORD = ServerErr(
+        'BAD_PASSWORD',
+        'Password should be at least 8 characters',
+        BAD_REQUEST
+    )
