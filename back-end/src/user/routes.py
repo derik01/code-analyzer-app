@@ -212,7 +212,10 @@ def upload_file():
                 f'--export-fixes={file.name}', 
                 '-checks=-*,bugprone-*,cppcoreguidelines-*,clang-analyzer*,readability-*',
                 '--header-filter=./',
-                '--extra-arg=-stdlib=libstdc++', 
+                # Search for libstd
+                '--extra-arg=-stdlib=libstdc++',
+                # Treat headers as c++ files
+                '--extra-arg-before=-xc++', 
                 *temp_files_paths,
             ]
 
