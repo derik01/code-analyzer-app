@@ -15,6 +15,15 @@ from errors import err
 import boto3
 import pickle
 
+import smtplib  
+import email.utils
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from bson.objectid import ObjectId
+
+from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
+
 # you can use db.analyses to access the analyses objects
 # and db.users to access the users
 import db 
@@ -30,6 +39,7 @@ access_key = "AKIAUX7NV5IPOEUTHQ7Z"
 secret_access_key = "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"
 upload_file_bucket = 'csce315project3files'
 client = boto3.client('s3', aws_access_key_id = access_key, aws_secret_access_key = secret_access_key)
+# email_client = boto3.client('ses', aws_access_key_id = access_key, aws_secret_access_key = secret_access_key)
 
 @user.route('/ping', methods=['GET'])
 def ping_pong():
@@ -65,7 +75,6 @@ def add_diagnostic_location(diagnostics : Dict, tmp_dir : str):
         Turns a "FileOffset" in the form (num) into a line and character "LineChar" tuple (line, char). This
         information will be used by the front-end to position the suggestions within the file. The method is
         called with tmp_dir because it reads the files line by line to determine the line and character position.
-
         It stores the line and character information in the dict "diagnostics" passed to the function. Roughly:
         {
             "file_id": {
@@ -113,9 +122,66 @@ def add_diagnostic_location(diagnostics : Dict, tmp_dir : str):
             diagnostic['DiagnosticMessage']['Location'] = line_indicator.line_char
             diagnostic['DiagnosticMessage']['EOF'] = line_indicator.eof
 
+
+def notify(user_email):
+    print("notify called.")
+    SENDER = "noreply@zyxcv.com"
+    SENDERNAME = "AutoCheck! Team"
+
+    RECIPIENT = user_email
+    USERNAME_SMTP = "AKIAUX7NV5IPB3ZNQEWN"
+    PASSWORD_SMTP = "BMA24YUM6IznIq1YOcTTQiu3ZGkGHAAqn224R7dDyl9A"
+
+    HOST = "email-smtp.us-east-2.amazonaws.com"
+    PORT = 587
+
+    SUBJECT = "Code Analysis Confirmation"
+
+    BODY_TEXT = ("Dear User, You have successfuly submitted code to be analyzed. Thank you for using AutoCheck!")
+
+    BODY_HTML = """<html>
+    <head></head>
+    <body>
+    <h1>Code Analysis Confirmation</h1>
+    <p>Dear User, You have successfuly submitted code to be analyzed. Thank you for using AutoCheck!</p>
+    </body>
+    </html>
+    """
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = SUBJECT
+    msg['From'] = email.utils.formataddr((SENDERNAME, SENDER))
+    msg['To'] = RECIPIENT
+
+    # Record the MIME types of both parts - text/plain and text/html.
+    part1 = MIMEText(BODY_TEXT, 'plain')
+    part2 = MIMEText(BODY_HTML, 'html')
+
+    # Attach parts into message container.
+    # According to RFC 2046, the last part of a multipart message, in this case
+    # the HTML message, is best and preferred.
+    msg.attach(part1)
+    msg.attach(part2)
+
+    # Try to send the message.
+    try:  
+        server = smtplib.SMTP(HOST, PORT)
+        server.ehlo()
+        server.starttls()
+        #stmplib docs recommend calling ehlo() before & after starttls()
+        server.ehlo()
+        server.login(USERNAME_SMTP, PASSWORD_SMTP)
+        server.sendmail(SENDER, RECIPIENT, msg.as_string())
+        server.close()
+    # Display an error message if something goes wrong.
+    except Exception as e:
+        print ("Email did not send: ", e)
+    else:
+        print ("Email sent!")
+
 @user.route('/upload', methods=['POST']) 
 def upload_file():
 
+    print("upload file called.")
     uploaded_files = request.files.getlist("files")
     suggestions = ""
     file_paths = []
@@ -183,6 +249,18 @@ def upload_file():
     upload_file_key = path_id + '/response.json'
     client.put_object(Bucket = upload_file_bucket, Key = upload_file_key, Body = json_dict)
 
+    session_id = request.cookies.get('session')
+
+    user = db.users.find_one({"_id" : ObjectId(session_id)})
+    db.users.update({"_id" : ObjectId(session_id)}, {'$push' : {'analyses' : path_id}}, upsert = True)
+
+    if not user:
+        return err.INVALID_USER.responsify()
+    
+    email = user['email']
+
+    notify(email)
+
     return jsonify({
         'analysis_id': path_id
     })
@@ -213,3 +291,28 @@ def get_analysis(analysis_id):
             response = json.load(file)
     
     return jsonify(response)
+
+# Returns the list of analyses by user_id
+@user.route('/get_analyses', methods=['GET'])
+def get_analyses():
+
+    session_id = request.cookies.get('session')
+    user = db.users.find_one({"_id" : ObjectId(session_id)})
+
+    analyses = user['analyses']
+
+    reversed_analyses = analyses[::-1]
+
+    analysis_dict = {}
+
+    central = timezone(timedelta(hours=-6))
+
+    for analysis in reversed_analyses:
+        time = ObjectId(analysis).generation_time
+        published_cst = time.astimezone(central)
+        actual_time_published = published_cst.strftime('%a, %b %d %Y at %I:%M:%S')
+        analysis_dict[analysis] = actual_time_published
+
+
+    # this is a list of analysis ids as string, it has been reversed so that the latest submission is in the front
+    return jsonify(analysis_dict)

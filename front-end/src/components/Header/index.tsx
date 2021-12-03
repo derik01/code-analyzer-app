@@ -1,22 +1,24 @@
 import * as React from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
+import { FC } from 'react';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import SettingsIcon from '@mui/icons-material/Settings';
-import PastSubmissions from '@mui/icons-material/DriveFileMove';
+import PastSubmissions from '@mui/icons-material/AccessTime';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import Logout from '@mui/icons-material/Logout';
 import { useRouter} from 'next/router';
+import { useServer } from '../../lib/server';
+
+
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -59,13 +61,84 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+type PastSubProps = {
+  analysisID: string;
+  date: string[];
+};
+
+type analysisID = {
+  ids : string[]
+}
+
+const PastSub : FC<PastSubProps> = ({analysisID, date, ...props} : PastSubProps) => {
+
+  return(
+      
+      <p><h4><b>Submitted:</b></h4>{date}</p>
+
+    
+  ) 
+};
+
+
 export default function PrimarySearchAppBar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
-  const router = useRouter();  
-  //temp log out stuff
-  const [isLoggedIn, setLoggedIn] = React.useState(true);
+  const [analysesID, setAnalysesID] = React.useState<analysisID | null>(null);
+  const [isPastSubmissions, setIsPastSubmissions] = React.useState<Boolean>(false);
+  const router = useRouter();
+  const server = useServer();
+  let pastSubmissions = undefined;
+
+  const handlePastSub = (analysesID : string) =>{
+      router.push({
+        pathname: '/analyzer',
+        query: {
+          analysis_id: analysesID
+        }
+      })
+  }
+
+  React.useEffect(() =>{
+    fetch('/user/get_analyses')
+    .then(res => res.json()
+      
+    ).then((success : analysisID) => 
+      {
+
+        console.log(success);
+        Object.entries(success!).map(([i,a])=>{
+          console.log(a);
+          if(a.length !== 0){setIsPastSubmissions(true)}
+        })
+        setAnalysesID(success);
+       
+        
+       
+      })
+    .catch(err => console.log(err));
+
+  }, [])
+
+  if(analysesID !== null){
+      
+      if(isPastSubmissions){
+        let count = 0;
+        pastSubmissions = Object.entries(analysesID!).map(([analy,d]) =>
+        <MenuItem onClick = {() => handlePastSub(analy)}>
+        <PastSub key = {`${analy}`} analysisID = {analy} date = {d} />
+        </MenuItem>)
+      }
+      else{
+        pastSubmissions = <MenuItem><p>No Past Submissions</p></MenuItem>
+     } 
+    }
+ 
+
+ 
+  
+
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -73,9 +146,10 @@ export default function PrimarySearchAppBar() {
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-  //temp log out stuff
+
   const handleLogOut = () => {
-    router.push('../');
+    document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    router.push('../login');
   }
 
   const handleSettings = () =>{
@@ -101,13 +175,13 @@ export default function PrimarySearchAppBar() {
       anchorEl={anchorEl}
       anchorOrigin={{
         vertical: 'top',
-        horizontal: 'right',
+        horizontal: 'left',
       }}
       id={menuId}
       keepMounted
       transformOrigin={{
         vertical: 'top',
-        horizontal: 'right',
+        horizontal: 'left',
       }}
       open={isMenuOpen}
       onClose={handleMenuClose}
@@ -122,67 +196,27 @@ export default function PrimarySearchAppBar() {
     <Menu
       anchorEl={mobileMoreAnchorEl}
       anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
+        vertical: 'bottom',
+        horizontal: 'left',
       }}
       id={mobileMenuId}
       keepMounted
       transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
+        vertical: 'bottom',
+        horizontal: 'left',
       }}
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit" onClick = {handleSettings}>
-          <Badge badgeContent={4} color="error">
-            <SettingsIcon />
-          </Badge>
-        </IconButton>
-        <p>Settings</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <Badge badgeContent={17} color="error">
-            <PastSubmissions />
-          </Badge>
-        </IconButton>
-        <p>Past Submissions</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
+
+      {pastSubmissions}
     </Menu>
   );
-  if(isLoggedIn){
+
     return (
         <Box sx={{ flexGrow: 1, paddingBottom: 5 }}>
           <AppBar position="static">
             <Toolbar>
-              <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                aria-label="open drawer"
-                sx={{ mr: 2 }}
-                onClick={handleMobileMenuOpen}
-              >
-                <MenuIcon/>
-              </IconButton>
               <Typography
                 variant="h6"
                 noWrap
@@ -193,19 +227,34 @@ export default function PrimarySearchAppBar() {
               </Typography>
               <Box sx={{ flexGrow: 1 }} />
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+              <Tooltip title = "Past Submissions">
+                <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="open drawer"
+                sx={{ mr: 2 }}
+                onClick={handleMobileMenuOpen}
+              >
+                <PastSubmissions/>
+              </IconButton>
+              </Tooltip>
+              <Tooltip title = "Log Out">
                 <IconButton
                   size="large"
                   edge="end"
                   aria-label="account of current user"
-                  aria-controls={menuId}
+                  aria-controls={mobileMenuId}
                   aria-haspopup="true"
                   onClick={handleLogOut}
                   color="inherit"
                 >
                   <Logout />
                 </IconButton>
+                </Tooltip>
               </Box>
               <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+                
                 <IconButton
                   size="large"
                   aria-label="show more"
@@ -216,6 +265,7 @@ export default function PrimarySearchAppBar() {
                 >
                   <MoreIcon />
                 </IconButton>
+                
               </Box>
             </Toolbar>
           </AppBar>
@@ -223,11 +273,6 @@ export default function PrimarySearchAppBar() {
           {renderMenu}
         </Box>
       );
-  }
-  else{
-    return (
-        <p>Logged Out</p>
-      );
-    }
+  
   
 }

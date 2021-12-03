@@ -72,14 +72,19 @@ const useServer = () => {
             for(const file of files) {
                 formData.append('files', file, file.name);
             }
-
+            
             return fetch('/user/upload', {
                 method: 'POST',
                 body: formData
             })
             .then(forceJSON)
             .catch(cannonicalizeErrorHanding) as Promise<AnalysisResponse>;
-        }
+        },
+        send_email: (email : string | undefined) => {
+            return postJSON('/user/pastsubmission', {
+                email
+            }) as Promise<AnalysisResponse[]>;
+        },
   
     };
 

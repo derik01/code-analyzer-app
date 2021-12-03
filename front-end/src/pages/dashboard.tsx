@@ -18,6 +18,8 @@ import { useServer } from '../lib/server';
 import Header from "../components/Header";
 import Cookies from 'js-cookie';
 
+
+
 declare module '@mui/material/AppBar' {
     interface AppBarColorOverrides {
         bg: true;
@@ -123,6 +125,7 @@ export default function Dashboard({ showError } : DefaultPageProps) {
     const [saying, setSaying] = useState({
         num: randInt(0, UPLOAD_SAYINGS.length)
     });
+    
 
     if(uploading) {
         setTimeout(() => {
@@ -145,6 +148,8 @@ export default function Dashboard({ showError } : DefaultPageProps) {
                     analysis_id: res.analysis_id
                 },
             });
+
+            
         })
         .catch(
             err => {

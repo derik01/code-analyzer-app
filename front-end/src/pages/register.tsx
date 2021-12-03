@@ -9,140 +9,40 @@ import { Paper } from "@mui/material";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Index from './index'
-import { useState } from "react";
 import { DefaultPageProps } from "./_app";
 import { useRouter } from 'next/router';
-import { useServer, ERRCODE } from '../lib/server';
+import { useServer } from '../lib/server';
 
-export type State = {
-  email: string,
-  password: string,
-  errmsg: string,
-  isButtonDisabled: boolean,
-  helperText: string,
-  isError: boolean
-};
-
-export const initialState: State = {
-  email: "",
-  password: "",
-  errmsg: "",
-  isButtonDisabled: true,
-  helperText: "",
-  isError: false
-};
-
-export type Action =
-  | { type: "setUsername", payload: string }
-  | { type: "setPassword", payload: string }
-  | { type: "setIsButtonDisabled", payload: boolean }
-  | { type: 'INVALID_CREDENTIALS', payload: string }
-  | { type: 'FETCH_FAILED', payload: string }
-  | { type: 'ACCOUNT_EXISTS', payload: string }
-
-export const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case "setUsername":
-      return {
-        ...state,
-        email: action.payload
-      };
-    case "setPassword":
-      return {
-        ...state,
-        password: action.payload
-      };
-    case "setIsButtonDisabled":
-      return {
-        ...state,
-        isButtonDisabled: action.payload
-      };
-    case 'INVALID_CREDENTIALS':
-      return {
-        ...state,
-        errmsg: action.payload
-      };
-      case 'FETCH_FAILED':
-      return {
-        ...state,
-        errmsg: action.payload
-      };
-      case 'ACCOUNT_EXISTS':
-      return {
-        ...state,
-        errmsg: action.payload
-      };
-      
-  }
-};
-
-const Register = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+const SignUp = () => {
+  const server = useServer();
+  const router = useRouter();
   const [formValue, setformValue] = React.useState({
     email: "",
     password: ""
   });
 
-  useEffect(() => {
-    if (state.email.trim() && state.password.trim()) { 
-      dispatch({
-        type: "setIsButtonDisabled",
-        payload: false
-      });
-    } else {
-      dispatch({
-        type: "setIsButtonDisabled",
-        payload: true
-      });
-    }
-  }, [state.email, state.password]);
+  const handleSignUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    setformValue({ ...formValue, [event.currentTarget.type]: event.currentTarget.value});
+    const response = server.signup(formValue.email, formValue.password);
+    
 
-  //-------------------------------------------------------------------------------------------
-  const handleSignup = () => {
-    const server = useServer();
-    const router = useRouter();  
-
-     const valid = server.signup(state.email, state.password);
-
-     valid.then(res => {
-        router.push({
-          pathname: '/dashboard'
-        })
-     })
-
-     valid.catch(err => {
-       dispatch({
-       type: err.code,
-       payload: `Failed to create account ${err.msg}`
-     })
+    response.then(res => {
+      router.push({
+        pathname: './login'
+      })
+   })
+      response.catch(err => {
+        alert(err.msg + ": " + err.code)
     });
-  }
-  //-------------------------------------------------------------------------------------------
 
-  const handleKeyPress = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      state.isButtonDisabled || handleSignup();
-    }
+    setformValue({ ...formValue, [event.currentTarget.type]: event.currentTarget.value});
   };
 
-  const handleUsernameChange: React.ChangeEventHandler<HTMLInputElement> = (
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
-    dispatch({
-      type: "setUsername",
-      payload: event.target.value
-    });
-    setformValue({ ...formValue, [event.type]: event.target.value });
-  };
-
-  const handlePasswordChange: React.ChangeEventHandler<HTMLInputElement> = (
-    event
-  ) => {
-    dispatch({
-      type: "setPassword",
-      payload: event.target.value
-    });
-    setformValue({ ...formValue, [event.type]: event.target.value });
+    setformValue({ ...formValue, [event.currentTarget.type]: event.currentTarget.value })
+    console.log(formValue.email);
   };
 
   return (
@@ -151,33 +51,28 @@ const Register = () => {
     <Grid align="center" padding="40px">
       <Box sx={{ flexGrow: 1 }} maxWidth="500px">
         <Paper elevation={3}>
-          <form id="formSubmit" noValidate autoComplete="off">
+          <form id="formValue" noValidate autoComplete="off">
             <Card>
               <CardHeader title="Sign Up" />
               <CardContent>
                 <div>
                   <TextField
-                    error={state.isError}
                     fullWidth
-                    id="username"
+                    id="email"
                     type="email"
-                    label="Username"
-                    placeholder="Username"
+                    label="Email"
+                    placeholder="Email"
                     margin="normal"
-                    onChange={handleUsernameChange}
-                    onKeyPress={handleKeyPress}
+                    onChange={handleChange}
                   />
                   <TextField
-                    error={state.isError}
                     fullWidth
                     id="password"
                     type="password"
                     label="Password"
                     placeholder="Password"
                     margin="normal"
-                    helperText={state.helperText}
-                    onChange={handlePasswordChange}
-                    onKeyPress={handleKeyPress}
+                    onChange={handleChange}
                   />
                 </div>
               </CardContent>
@@ -185,12 +80,10 @@ const Register = () => {
                 <Button
                   variant="contained"
                   size="large"
-                  color="secondary"
+                  color="inherit"
                   className="Btn"
-                  id="validate"
-                  type="validate"
-                  onClick={handleSignup}
-                  disabled={state.isButtonDisabled}
+                  onClick={handleSignUp}
+                  enabled
                 >
                   Sign Up
                 </Button>
@@ -204,4 +97,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default SignUp;

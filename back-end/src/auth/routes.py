@@ -32,11 +32,11 @@ def validate_user(username, password):
     matches = db.users.find_one({"email": username})
     if matches:
         if bcrypt.check_password_hash(matches["password"], password):
-            return "True"
+            return "True", str(matches['_id'])
         else:
-            return "False"
+            return "False", None
     else:
-        return "No User"
+        return "No User", None
 
 
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
@@ -57,6 +57,7 @@ def register():
         return err.PARAMETER_MISSING.responsify() 
 
     email, password = json['email'], json['password']
+    analyses_list = []
 
     if not user_exists(email, password):
         if len(password) < 8:
@@ -67,13 +68,13 @@ def register():
             hash_pass = bcrypt.generate_password_hash(password).decode('utf-8')
             userRecord = {
                 "email": email,
-                "password": hash_pass
+                "password": hash_pass,
+                "analyses": analyses_list
             }
             db.users.insert_one(userRecord)
             return jsonify()
     
     return err.ACCOUNT_EXISTS.responsify()
-
 
 @auth.route('/login', methods=['POST'])
 def login():
@@ -84,11 +85,13 @@ def login():
 
     email, password = json['email'], json['password']
 
-    if validate_user(email, password) == "True":
-        response = flask.make_response()
-        response.set_cookie("UserCookie", email)
-        return jsonify()
-    elif validate_user(email, password) == "False":
+    validated, userid = validate_user(email, password)
+
+    if validated == "True":
+        res = flask.make_response(jsonify())
+        res.set_cookie('session', userid)
+        return res
+    elif validated == "False":
         return err.INVALID_CREDENTIALS.responsify()
 
     return err.INVALID_USER.responsify()

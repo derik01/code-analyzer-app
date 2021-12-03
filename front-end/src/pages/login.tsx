@@ -9,138 +9,42 @@ import { Paper } from "@mui/material";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Index from './index'
-import { DefaultPageProps } from "./_app";
 import { useRouter } from 'next/router';
 import { useServer } from '../lib/server';
 
-export type State = {
-  email: string,
-  password: string,
-  login: string,
-  isButtonDisabled: boolean,
-  helperText: string,
-  isError: boolean
-};
 
-export const initialState: State = {
-  email: "",
-  password: "",
-  login: "",
-  isButtonDisabled: true,
-  helperText: "",
-  isError: false
-};
-
-export type Action =
-  | { type: "setUsername", payload: string }
-  | { type: "setPassword", payload: string }
-  | { type: "setIsButtonDisabled", payload: boolean }
-  | { type: "loginSuccess", payload: string }
-  | { type: "loginFailed", payload: string }
-  | { type: "setIsError", payload: boolean };
-
-export const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case "setUsername":
-      return {
-        ...state,
-        email: action.payload
-      };
-    case "setPassword":
-      return {
-        ...state,
-        password: action.payload
-      };
-    case "setIsButtonDisabled":
-      return {
-        ...state,
-        isButtonDisabled: action.payload
-      };
-    case "loginSuccess":
-      return {
-        ...state,
-        helperText: action.payload,
-        isError: false
-      };
-    case "loginFailed":
-      return {
-        ...state,
-        helperText: action.payload,
-        isError: true
-      };
-    case "setIsError":
-      return {
-        ...state,
-        isError: action.payload
-      };
-  }
-};
 
 const Login = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const server = useServer();
+  const router = useRouter();
   const [formValue, setformValue] = React.useState({
     email: "",
     password: ""
   });
 
-  useEffect(() => {
-    if (state.email.trim() && state.password.trim()) {
-      dispatch({
-        type: "setIsButtonDisabled",
-        payload: false
-      });
-    } else {
-      dispatch({
-        type: "setIsButtonDisabled",
-        payload: true
-      });
-    }
-  }, [state.email, state.password]);
-  
+  async function submitForm(event: React.KeyboardEvent<HTMLInputElement>) {
+    setformValue({ ...formValue, [event.currentTarget.type]: event.currentTarget.value});
 
-  const handleLogin = () => {
-    const server = useServer();
-    const router = useRouter();  
-    const valid = server.signin(state.email, state.password);
+    const response = server.signin(formValue.email, formValue.password);
 
-     valid.then(res => {
-        router.push({
-          pathname: './dashboard'
-        }); 
-     })
-
-     valid.catch(err => {
-       dispatch({
-       type: err.code,
-       payload: `Failed to sign in account ${err.msg}`
-     })
+    
+    response.then(res => {
+      router.push({
+        pathname: './dashboard'
+      })
+   })
+      response.catch(err => {
+        alert(err.msg + ": " + err.code)
+        console.error(err.msg + ": " + err.code)
     });
-  };
-  
-  const handleKeyPress = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      const valid = state.isButtonDisabled || handleLogin();
-    }
-  };
 
-  const handleUsernameChange: React.ChangeEventHandler<HTMLInputElement> = (
+    setformValue({ ...formValue, [event.currentTarget.type]: event.currentTarget.value});
+  }
+
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
-    dispatch({
-      type: "setUsername",
-      payload: event.target.value
-    });
-    setformValue({ ...formValue, [event.type]: event.target.value });
-  };
-
-  const handlePasswordChange: React.ChangeEventHandler<HTMLInputElement> = (
-    event
-  ) => {
-    dispatch({
-      type: "setPassword",
-      payload: event.target.value
-    });
-    setformValue({ ...formValue, [event.type]: event.target.value });
+    setformValue({ ...formValue, [event.currentTarget.type]: event.currentTarget.value })
   };
 
   return (
@@ -155,27 +59,24 @@ const Login = () => {
               <CardContent>
                 <div>
                   <TextField
-                    error={state.isError}
                     fullWidth
-                    id="username"
+                    id="email"
                     type="email"
-                    label="Username"
-                    placeholder="Username"
+                    value={formValue.email}
+                    label="Email"
+                    placeholder="Email"
                     margin="normal"
-                    onChange={handleUsernameChange}
-                    onKeyPress={handleKeyPress}
+                    onChange={handleChange}
                   />
                   <TextField
-                    error={state.isError}
                     fullWidth
                     id="password"
                     type="password"
+                    value={formValue.password}
                     label="Password"
                     placeholder="Password"
                     margin="normal"
-                    helperText={state.helperText}
-                    onChange={handlePasswordChange}
-                    onKeyPress={handleKeyPress}
+                    onChange={handleChange}
                   />
                 </div>
               </CardContent>
@@ -183,10 +84,10 @@ const Login = () => {
                 <Button
                   variant="contained"
                   size="large"
-                  color="secondary"
+                  color="inherit"
                   className="Btn"
-                  onClick={handleLogin}
-                  disabled={state.isButtonDisabled}
+                  onClick={submitForm}
+                  enabled
                 >
                   Login
                 </Button>
@@ -198,6 +99,6 @@ const Login = () => {
     </Grid>
     </Box>
   );
-};
+}
 
 export default Login;
