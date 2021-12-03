@@ -1,13 +1,9 @@
 import * as React from 'react';
 import { FC } from 'react';
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import { LinearProgress, Grid, Paper, CircularProgress } from '@mui/material';
-import CodeIcon from '@mui/icons-material/Code';
+import { LinearProgress, Grid, Paper } from '@mui/material';
 import { Container, Stack } from '@mui/material';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { useDropzone } from 'react-dropzone';
@@ -94,7 +90,9 @@ const UploadPannel : FC = () => (
         <Typography
             variant="subtitle1"
         >
-            Code analyzer allows you to analyze your C++ code. Simple choose a file to upload and await the results!
+            AutoCheck allows you to analyze your C++ code. It identifies common logic errors, 
+            readability issues, and syntax errors. Simply choose source files to upload and await the 
+            results! You can even share your results with an instructor or TA.
         </Typography>
     </Box>
 );
@@ -110,8 +108,8 @@ export default function Dashboard({ showError } : DefaultPageProps) {
         'Superimposing all quantum states',
         'Backpropagating the gradients',
         'Converting big-endian to little-endian',
-        'Detecting program haults',
-        'Caffinating the monkeys',
+        'Detecting program halts',
+        'Caffeinating the monkeys',
         'Calculating the cross-entropy',
         'Associating the cache'
     ];
