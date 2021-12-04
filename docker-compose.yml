@@ -14,6 +14,11 @@ services:
   back:
     build: ./back-end
     image: code-analyzer-back-end
+    environment:
+      - BASE_URL=http://localhost:8080
+      - S3_ACCESS_KEY=AKIAUX7NV5IPOEUTHQ7Z
+      - S3_SECRET_ACCESS_KEY=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
+      - MONGO_URL=mongodb://mongo:27017
     container_name: code-analyzer-back-end
     volumes:
       - ./back-end/src:/back-end/src

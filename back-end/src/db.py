@@ -4,9 +4,10 @@
 #
 # db.users.do_something()
 
+import os
 import pymongo
 
-client = pymongo.MongoClient("mongodb://mongo:27017")
+client = pymongo.MongoClient(os.environ['MONGO_URL'])
 
 # Use a staging database
 db = client.staging

@@ -24,6 +24,8 @@ from bson.objectid import ObjectId
 from datetime import datetime, timezone, timedelta
 from zoneinfo import ZoneInfo
 
+from urllib.parse import urlparse
+
 # you can use db.analyses to access the analyses objects
 # and db.users to access the users
 import db 
@@ -35,8 +37,8 @@ import db
 
 user = Blueprint('user', __name__, url_prefix='/user')
 
-access_key = "AKIAUX7NV5IPOEUTHQ7Z"
-secret_access_key = "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"
+access_key = os.environ['S3_ACCESS_KEY']
+secret_access_key = os.environ['S3_SECRET_ACCESS_KEY']
 upload_file_bucket = 'csce315project3files'
 client = boto3.client('s3', aws_access_key_id = access_key, aws_secret_access_key = secret_access_key)
 
@@ -122,7 +124,7 @@ def add_diagnostic_location(diagnostics : Dict, tmp_dir : str):
             diagnostic['DiagnosticMessage']['EOF'] = line_indicator.eof
 
 
-def notify(user_email):
+def notify(user_email, analysis_id):
     print("notify called.")
     SENDER = "noreply@zyxcv.com"
     SENDERNAME = "AutoCheck! Team"
@@ -136,13 +138,17 @@ def notify(user_email):
 
     SUBJECT = "Code Analysis Confirmation"
 
-    BODY_TEXT = ("Dear User, You have successfuly submitted code to be analyzed. Thank you for using AutoCheck!")
+    host = os.environ['BASE_URL']
+    url = str(host) + "/analyzer?analysis_id=" + analysis_id
+
+    BODY_TEXT = ("""Dear User, \n\nYou have successfuly submitted code to be analyzed. 
+    You may view your submission at the following link: """ + url +"""\n\nThank you for using AutoCheck!""")
 
     BODY_HTML = """<html>
     <head></head>
     <body>
-    <h1>Code Analysis Confirmation</h1>
-    <p>Dear User, You have successfuly submitted code to be analyzed. Thank you for using AutoCheck!</p>
+    <p>Dear User, <br><br>You have successfuly submitted code to be analyzed. 
+    You may view your submission at the following link: <a href=\"""" + url +"""\">Analysis Results</a><br><br>Thank you for using AutoCheck!</p>
     </body>
     </html>
     """
@@ -261,7 +267,7 @@ def upload_file():
     
     email = user['email']
 
-    notify(email)
+    notify(email, path_id)
 
     return jsonify({
         'analysis_id': path_id
