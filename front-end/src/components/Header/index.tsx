@@ -224,7 +224,7 @@ export default function PrimarySearchAppBar({ showError } : DefaultPageProps) {
                 component="div"
                 sx={{ display: { xs: 'none', sm: 'block' } }}
               >
-                AutoCheck
+                AutoCheck!
               </Typography>
               <Box sx={{ flexGrow: 1 }} />
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
