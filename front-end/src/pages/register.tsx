@@ -13,7 +13,7 @@ import { DefaultPageProps } from "./_app";
 import { useRouter } from 'next/router';
 import { useServer } from '../lib/server';
 
-const SignUp = () => {
+const SignUp = ({ showError } : DefaultPageProps) => {
   const server = useServer();
   const router = useRouter();
   const [formValue, setformValue] = React.useState({
@@ -21,7 +21,7 @@ const SignUp = () => {
     password: ""
   });
 
-  const handleSignUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleSignUp = (event: React.FormEvent<HTMLInputElement>) => {
     setformValue({ ...formValue, [event.currentTarget.type]: event.currentTarget.value});
     const response = server.signup(formValue.email, formValue.password);
     
@@ -32,7 +32,10 @@ const SignUp = () => {
       })
    })
       response.catch(err => {
-        alert(err.msg + ": " + err.code)
+        showError({
+          msg: `Failed to sign up ${err.msg}`,
+          ...err
+      });
     });
 
     setformValue({ ...formValue, [event.currentTarget.type]: event.currentTarget.value});
